@@ -1,2 +1,2 @@
 # ImageCodes
-The repo contains the lab works and project
+The repo will have the lab works and project
