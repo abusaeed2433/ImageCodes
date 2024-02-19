@@ -12,7 +12,7 @@ def generateGaussianKernel(sigmaX, sigmaY, MUL = 7, cx = -1, cy = -1):
     if cx == -1:
         cx = w // 2
     if cy == -1:
-        cy = h // 2
+        cy = h // 2 
 
     kernel = np.zeros((w, h))
     c = 1 / ( 2 * 3.1416 * sigmaX * sigmaY )
@@ -67,7 +67,6 @@ def generateLogKernel(sigma, MUL = 7):
     center = n // 2
     part1 = -1 / (np.pi * sigma**4)
     
-    mn = math.inf
     for x in range(n):
         for y in range(n):
             dx = x - center
@@ -76,11 +75,11 @@ def generateLogKernel(sigma, MUL = 7):
             part2 = (dx**2 + dy**2) / (2 * sigma**2)
             
             kernel[x][y] =  part1 * (1 - part2) * np.exp(-part2)
-            mn = min( abs(kernel[x][y]), mn )
     
     #print("Formatted LoG kernel")
     
-    #print( (kernel / mn).astype(int) )
+    mn = np.min(np.abs(kernel))
+    print( (kernel / mn).astype(int) )
     
     return kernel
 
@@ -109,7 +108,7 @@ def testKernel():
     #kernel = generateLaplacianKernel( negCenter = True )
     #print(kernel)
     
-    #kernel = generateLogKernel(1.4)
+    kernel = generateLogKernel(1.4)
     #print(kernel)
     
     #kernel = generateSobelKernel( horiz = False )
