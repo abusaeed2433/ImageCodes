@@ -7,8 +7,7 @@ def extract_rgb(image):
     return (red_channel, green_channel, blue_channel)
 
 def merge_rgb( red, green, blue ):
-    return cv2.merge( [red, green, blue] )
-
+    return cv2.merge( [blue, green, red] )
 
 
 # image_path = 'ClassWork/image_girl.jpg'
