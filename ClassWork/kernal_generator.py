@@ -99,8 +99,8 @@ def generateSobelKernel( horiz = True ):
     return sobel_x if horiz else sobel_y
 
 def testKernel():
-    #kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5, cx = -1, cy = -1 )
-    #print(kernel)
+    kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5, cx = -1, cy = -1 )
+    print(kernel)
     
     #kernel = generateMeanKernel( rows = 3, cols = 3 )
     #print(kernel)
@@ -108,7 +108,7 @@ def testKernel():
     #kernel = generateLaplacianKernel( negCenter = True )
     #print(kernel)
     
-    kernel = generateLogKernel(1.4)
+    #kernel = generateLogKernel(1.4)
     #print(kernel)
     
     #kernel = generateSobelKernel( horiz = False )
