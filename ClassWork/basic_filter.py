@@ -76,14 +76,14 @@ def performConvol(imagePath, kernel, imageType = InputImageType.GRAY, kernel_cen
     # Crop the output to the original image size
     out = output[kernel_center[0]:-kernel_height + kernel_center[0] + 1, kernel_center[1]:-kernel_width + kernel_center[1] + 1]
             
-    print('Before normalizing')
-    print(out)
+    # print('Before normalizing')
+    # print(out)
     
-    cv2.waitKey(0)
+
     cv2.normalize(out,out,0,255,cv2.NORM_MINMAX)
     out = np.round(out).astype(np.uint8)
-    print('After normalizing')
-    print(out)
+    # print('After normalizing')
+    # print(out)
 
     #out = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
     cv2.imshow('Output image', out)
@@ -104,7 +104,7 @@ kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5, cx = -1, cy = 
 # print("Laplacian filter")
 # print(kernel)
 
-# kernel = generateLogKernel(sigma = 1.4)
+kernel = generateLogKernel(sigma = 1.4)
 # print("LoG filter")
 # print(kernel)
 
