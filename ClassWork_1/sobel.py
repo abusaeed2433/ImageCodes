@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from kernal_generator import generateSobelKernel
+from convolution import normalize
 from convolution import convolve
 import math
 
@@ -39,5 +40,5 @@ def perform_sobel(imagePath, kernel_center = (-1,-1)):
     cv2.destroyAllWindows()
     
 
-image_path = 'ClassWork/image_girl.jpg'
+image_path = '.\images\\shape.jpg'
 perform_sobel(imagePath=image_path, kernel_center=(0,0))
