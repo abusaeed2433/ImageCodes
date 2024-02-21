@@ -32,7 +32,7 @@ def convolve_rgb(image, kernel, kernel_center=(-1,-1)):
     cv2.destroyAllWindows()
 
 
-# image_path = 'ClassWork\\image_girl.jpg'
+# image_path = '.\images\\shape.jpg'
 # image = cv2.imread( image_path )
 
 # kernel = np.array([
