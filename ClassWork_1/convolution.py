@@ -61,14 +61,15 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
             #     print(f"For position({x},{y}): image from: ({image_start_x},{image_start_y}) to ({image_start_x+kernel_height},{image_start_y+kernel_width})")
             
             sum = 0
-            N = kernel_width // 2
-            for kx in range( -N, N+1):
-                for ky in range( -N, N+1 ):
-                    rel_pos_in_kernel_x = kx + N # x-i
-                    rel_pos_in_kernel_y = ky + N # y-j
+            NX = kernel_width // 2
+            NY = kernel_height // 2
+            for kx in range( -NX, NX+1):
+                for ky in range( -NY, NY+1 ):
+                    rel_pos_in_kernel_x = kx + NX # x-i
+                    rel_pos_in_kernel_y = ky + NY # y-j
                     
-                    rel_pos_in_image_x = N - kx # 2
-                    rel_pos_in_image_y = N - ky # 2
+                    rel_pos_in_image_x = NX - kx # 2
+                    rel_pos_in_image_y = NY - ky # 2
                     
                     act_pos_in_image_x = rel_pos_in_image_x + image_start_x # 2 + 2 = 4
                     act_pos_in_image_y = rel_pos_in_image_y + image_start_y # 3 + 2 = 5
@@ -92,17 +93,17 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
     return out
 
 
-# image = np.array([
-#     [1,2,3],
-#     [4,5,6],
-#     [7,8,9]
-# ])
+image = np.array([
+    [1,2,3],
+    [4,5,6],
+    [7,8,9]
+])
 
-# kernel = np.array([
-#     [1,2,3],
-#     [4,5,6],
-#     [7,8,9]
-# ])
+kernel = np.array([
+    [1,2,3],
+    [4,5,6],
+    [7,8,9]
+])
 
 # kernel = np.array([
 #     [0,0,0],
@@ -110,5 +111,5 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
 #     [0,0,0]
 # ])
 
-# out = convolve(image=image, kernel=kernel,kernel_center=(0,0))
-# print(out)
+out = convolve(image=image, kernel=kernel,kernel_center=(-1,-1))
+print(out)
