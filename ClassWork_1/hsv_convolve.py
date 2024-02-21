@@ -23,11 +23,11 @@ def convolve_hsv(image, kernel, kernel_center=(-1,-1)):
     val_conv = convolve(image=val, kernel=kernel, kernel_center=kernel_center)
     val_nor = normalize(val_conv)
     
-    # cv2.imshow("Extracted Hue", hue_nor)
-    # cv2.imshow("Extracted Sat", sat_nor)
-    # cv2.imshow("Extracted Val", val_nor)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow("Extracted Hue", hue_nor)
+    cv2.imshow("Extracted Sat", sat_nor)
+    cv2.imshow("Extracted Val", val_nor)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     
     merged_hsv = merge_hsv(h=hue_nor, s=sat_nor, v=val_nor)
     #merged_rgb = hsv_to_rgb(merge_hsv)
@@ -40,6 +40,8 @@ def convolve_hsv(image, kernel, kernel_center=(-1,-1)):
     cv2.waitKey(0)
     
     cv2.destroyAllWindows()
+    
+    return merged_rgb
 
 
 # image_path = '.\images\\shape.jpg'

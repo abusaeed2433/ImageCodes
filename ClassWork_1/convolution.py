@@ -84,11 +84,11 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
     return out
 
 
-image = np.array([
-    [1,2,3],
-    [4,5,6],
-    [7,8,9]
-])
+# image = np.array([
+#     [1,2,3],
+#     [4,5,6],
+#     [7,8,9]
+# ])
 
 # kernel = np.array([
 #     [1,2,3],
@@ -96,11 +96,11 @@ image = np.array([
 #     [7,8,9]
 # ])
 
-kernel = np.array([
-    [0,0,0],
-    [0,1,0],
-    [0,0,0]
-])
+# kernel = np.array([
+#     [0,0,0],
+#     [0,1,0],
+#     [0,0,0]
+# ])
 
-out = convolve(image=image, kernel=kernel,kernel_center=(1,1))
-print(out)
+# out = convolve(image=image, kernel=kernel,kernel_center=(1,1))
+# print(out)

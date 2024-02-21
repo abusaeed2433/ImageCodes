@@ -3,16 +3,14 @@ import math
 import numpy as np
 import scipy.ndimage as ndimage
 
-def generateGaussianKernel(sigmaX, sigmaY, MUL = 7, cx = -1, cy = -1):
+def generateGaussianKernel(sigmaX, sigmaY, MUL = 7):
     w = int(sigmaX * MUL) | 1
     h = int(sigmaY * MUL) | 1
     
     #print(w,h)
 
-    if cx == -1:
-        cx = w // 2
-    if cy == -1:
-        cy = h // 2 
+    cx = w // 2
+    cy = h // 2 
 
     kernel = np.zeros((w, h))
     c = 1 / ( 2 * 3.1416 * sigmaX * sigmaY )
@@ -30,21 +28,20 @@ def generateGaussianKernel(sigmaX, sigmaY, MUL = 7, cx = -1, cy = -1):
     formatted_kernel = kernel / np.min(kernel)
     formatted_kernel = formatted_kernel.astype(int)
 
-    #print("Formatted gaussian filter")
-    #print(formatted_kernel)
+    print("Formatted gaussian filter")
+    print(formatted_kernel)
     
-    return kernel
+    return (kernel, formatted_kernel)
 
 def generateMeanKernel(rows = 3, cols = 3):
-    kernel = np.zeros( (rows, cols) )
+    formatted_kernel = np.zeros( (rows, cols) )
 
     for x in range(0, rows):
         for y in range(0, cols):
-            kernel[x,y] = 1.0
-            
-    #print("Formatted mean kernel")
-    #print(kernel)
-    return kernel / (rows * cols)
+            formatted_kernel[x,y] = 1.0
+
+    kernel = formatted_kernel / (rows * cols)
+    return (kernel, formatted_kernel)
 
 def generateLaplacianKernel( negCenter = True ):
     n = 3    
@@ -56,7 +53,7 @@ def generateLaplacianKernel( negCenter = True ):
     kernel[center, center] = - other_val * ( n*n - 1 )
     
     #print(kernel)
-    return kernel
+    return (kernel,kernel)
 
 def generateLogKernel(sigma, MUL = 7):
     n = int(sigma * MUL)
@@ -79,9 +76,9 @@ def generateLogKernel(sigma, MUL = 7):
     #print("Formatted LoG kernel")
     
     mn = np.min(np.abs(kernel))
-    print( (kernel / mn).astype(int) )
+    formatted_kernel = (kernel / mn).astype(int)
     
-    return kernel
+    return (kernel, formatted_kernel)
 
 def generateSobelKernel( horiz = True ):
     sobel_x = np.array([
@@ -99,13 +96,13 @@ def generateSobelKernel( horiz = True ):
     return sobel_x if horiz else sobel_y
 
 def testKernel():
-    kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5, cx = -1, cy = -1 )
-    print(kernel)
-    
-    #kernel = generateMeanKernel( rows = 3, cols = 3 )
+    #kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 7)
     #print(kernel)
     
-    #kernel = generateLaplacianKernel( negCenter = True )
+    #kernel = generateMeanKernel( rows = 5, cols = 5 )
+    #print(kernel)
+    
+    #kernel = generateLaplacianKernel( negCenter = False )
     #print(kernel)
     
     #kernel = generateLogKernel(1.4)
@@ -114,7 +111,8 @@ def testKernel():
     #kernel = generateSobelKernel( horiz = False )
     #print(kernel)
     
-    print("I don't know")
+    print("-")
+
 
 
 testKernel()

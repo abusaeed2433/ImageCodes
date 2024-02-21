@@ -4,9 +4,9 @@ from kernal_generator import generateSobelKernel
 from convolution import normalize
 from convolution import convolve
 import math
+from basic_filter import InputImageType
 
-
-def perform_sobel(imagePath, kernel_center = (-1,-1)):
+def perform_sobel(imagePath, conv_type = InputImageType.GRAY, kernel_center = (-1,-1)):
     image = cv2.imread( imagePath, cv2.IMREAD_GRAYSCALE )
     kernel_horiz = generateSobelKernel()
     image_horiz = convolve(image=image, kernel=kernel_horiz, kernel_center=kernel_center)
@@ -38,7 +38,16 @@ def perform_sobel(imagePath, kernel_center = (-1,-1)):
     cv2.imshow('Output image', out)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
 
-image_path = '.\images\\shape.jpg'
-perform_sobel(imagePath=image_path, kernel_center=(0,0))
+
+def showSobelKernel():
+    kernel_horiz = generateSobelKernel(horiz=True)
+    print("Horizontal sobel kernel")
+    print(kernel_horiz)
+
+    kernel_vert = generateSobelKernel(horiz=False)
+    print("Vertical sobel kernel")
+    print(kernel_vert)
+
+#image_path = '.\images\\shape.jpg'
+#perform_sobel(imagePath=image_path, kernel_center=(0,0))
