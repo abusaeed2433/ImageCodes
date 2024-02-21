@@ -1,5 +1,13 @@
 import cv2
 import numpy as np
+from enum import Enum
+
+def find_difference(image1, image2):
+    image1 = cv2.resize(image1, (image2.shape[1], image2.shape[0]))
+    difference = cv2.absdiff(image1, image2)
+    difference = normalize(difference)
+    
+    return difference
 
 def normalize(image):
     cv2.normalize(image,image,0,255,cv2.NORM_MINMAX)

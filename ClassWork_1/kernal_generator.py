@@ -33,7 +33,10 @@ def generateGaussianKernel(sigmaX, sigmaY, MUL = 7):
     
     return (kernel, formatted_kernel)
 
-def generateMeanKernel(rows = 3, cols = 3):#odd
+def generateMeanKernel(rows = 3, cols = 3):
+    rows = rows | 1
+    cols = cols | 1
+    
     formatted_kernel = np.zeros( (rows, cols) )
 
     for x in range(0, rows):
@@ -47,10 +50,18 @@ def generateLaplacianKernel( negCenter = True ):
     n = 3    
     other_val = 1 if negCenter else -1
     
-    kernel = other_val * np.ones( (n, n) )
-    center = n // 2
+    kernel = np.array([
+        [0,1,0],
+        [1,-4,1],
+        [0,1,0]
+    ])
     
-    kernel[center, center] = - other_val * ( n*n - 1 )
+    # kernel = other_val * np.ones( (n, n) )
+    # center = n // 2
+    
+    # kernel[center, center] = - other_val * ( n*n - 1 )
+    
+    kernel = other_val * kernel
     
     #print(kernel)
     return (kernel,kernel)

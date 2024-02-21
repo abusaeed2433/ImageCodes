@@ -1,38 +1,36 @@
 import numpy as np
 import cv2
 import math
+
 from kernal_generator import *
 from extractor_merger import *
 
-from convolution import normalize
-from convolution import convolve
+from convolution import *
+# from convolution import normalize
+# from convolution import convolve
+# from convolution import find_difference
 
-from sobel import *
-
+from sobel import perform_sobel
+from sobel import showSobelKernel
 
 from rgb_convolve import convolve_rgb
 from hsv_convolve import convolve_hsv
 
-from enum import Enum
- 
-class InputImageType(Enum):
-    GRAY = 1
-    RGB_HSV = 2
-    
-def find_difference(image1, image2):
-    image1 = cv2.resize(image1, (image2.shape[1], image2.shape[0]))
-    difference = cv2.absdiff(image1, image2)
-    difference = normalize(difference)
-    
-    return difference
 
-def performConvol(imagePath, kernel, imageType = InputImageType.GRAY, kernel_center = (-1,-1)): # kernel_center = (y,x) # ( h, w )
-    
-    if imageType == InputImageType.GRAY:
+def performConvol(imagePath, kernel, imageType = 1, kernel_name = "other", kernel_center = (-1,-1)): # kernel_center = (y,x) # ( h, w )
+    # 1 = gray, 2 = hsv & rgb
+    if imageType == 1:
         image = cv2.imread( imagePath, cv2.IMREAD_GRAYSCALE )
         
         out_conv = convolve(image=image, kernel=kernel, kernel_center=kernel_center)
-        out_nor = normalize(out_conv)
+
+        out = np.clip(out_conv, 0, 255)
+        out_nor = np.uint8(out)
+        
+        if kernel_name.lower() == 'laplacian':
+            out_nor = normalize(out)
+        
+        #out_nor = normalize(out_conv)
 
         cv2.imshow('Input image', image)
         cv2.imshow('Output image', out_nor)
@@ -181,7 +179,7 @@ def start():
         if index == -1:
             continue
         
-        operation_type = InputImageType.GRAY if(index == 0) else InputImageType.RGB_HSV
+        operation_type = 1 if(index == 0) else 2
 
         index = choose_option(kernel_names, message="Select a kernel: ")
         if index == -1:
@@ -189,16 +187,15 @@ def start():
         kernel_name = kernel_names[index]
         
         if kernel_name.lower() == "sobel" :
-            #showSobelKernel()
+            showSobelKernel()
             kernel_center = get_kernel_center()
             perform_sobel(imagePath=image_path, conv_type=operation_type, kernel_center=kernel_center)
         else:
             kernel = take_and_generate_kernel(kernel_name=kernel_name)
             kernel_center = get_kernel_center()
-            
             performConvol( imagePath=image_path, imageType=operation_type, kernel=kernel, kernel_center=kernel_center )
         
         print("Completed")
 
 
-#start()
+start()
