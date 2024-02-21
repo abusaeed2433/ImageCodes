@@ -19,28 +19,38 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
     
     # if kernel center is not defined, then it will use the center symmetric center
     if kernel_center[0] == -1:
-        kernel_center = ( kernel_width // 2, kernel_height // 2 )
+        kernel_center = ( kernel_height // 2, kernel_width // 2 )
     
     # pad the input image based on kernel and center
     padded_image = pad_image(image = image,  kernel_height = kernel_height, kernel_width = kernel_width, kernel_center = kernel_center)
 
     # generating output with dummy zeros(0)
     output = np.zeros_like(padded_image, dtype='float32')
-
+    
+    print("Padded image")
+    print(padded_image)
+    
+    # xx = 1
+    # yy = 2
+    # print(f"Value at ({xx},{yy}) is {padded_image[xx,yy]}")
+    
     # padded image height, width
     padded_height, padded_width = padded_image.shape
 
-    kcy = kernel_center[0]
-    kcx = kernel_center[1]
+    kcx = kernel_center[0]
+    kcy = kernel_center[1]
     
     # iterating through height. For (1,1) kernel, it iterates from 1 to (h - 1)
-    for y in range( kcy, padded_height - ( kernel_height - (kcy+1)) ):
+    for x in range( kcx, padded_height - ( kernel_height - (kcx+1)) ):
         # iterate through width. For (1,1) kernel, it iterates from 1 to (w - 1)
-        for x in range( kcx, padded_width - ( kernel_width - (kcx + 1)) ):
+        for y in range( kcy, padded_width - ( kernel_width - (kcy + 1)) ):
             
             # calculating the portion in image, that will be convoluted now
-            image_start_x = x - kernel_center[1]
-            image_start_y = y - kernel_center[0]
+            image_start_x = x - kcx
+            image_start_y = y - kcy
+            
+            # if x == 1 and y == 2:
+            #     print(f"For position({x},{y}): image from: ({image_start_x},{image_start_y}) to ({image_start_x+kernel_height},{image_start_y+kernel_width})")
             
             sum = 0
             N = kernel_width // 2
@@ -56,14 +66,41 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
                     act_pos_in_image_y = rel_pos_in_image_y + image_start_y # 3 + 2 = 5
                     
                     k_val = kernel[ rel_pos_in_kernel_x ][ rel_pos_in_kernel_y ]
-                    i_val = padded_image[ act_pos_in_image_y ][ act_pos_in_image_x ]
+                    i_val = padded_image[ act_pos_in_image_x ][ act_pos_in_image_y ]
+                    
+                    # if x == 1 and y == 2:
+                    #     #print(k_val, "*", i_val)
+                    #     print(f"({rel_pos_in_image_x}, {rel_pos_in_image_y}) * ({rel_pos_in_kernel_x}, {rel_pos_in_kernel_y}): {k_val} * {i_val} Actual pos in image: ({act_pos_in_image_x}, {act_pos_in_image_y})")
                     
                     sum +=  k_val * i_val
 
-                output[y,x] = sum
+                output[x,y] = sum
 
+    print("Output before cropping")
+    print(output)
     # Crop the output to the original image size
     out = output[kernel_center[0]:-kernel_height + kernel_center[0] + 1, kernel_center[1]:-kernel_width + kernel_center[1] + 1]
     
     return out
 
+
+image = np.array([
+    [1,2,3],
+    [4,5,6],
+    [7,8,9]
+])
+
+# kernel = np.array([
+#     [1,2,3],
+#     [4,5,6],
+#     [7,8,9]
+# ])
+
+kernel = np.array([
+    [0,0,0],
+    [0,1,0],
+    [0,0,0]
+])
+
+out = convolve(image=image, kernel=kernel,kernel_center=(1,1))
+print(out)
