@@ -3,6 +3,8 @@ import cv2
 import math
 from kernal_generator import *
 from extractor_merger import *
+from convolution import normalize
+from convolution import convolve
 from enum import Enum
  
 class InputImageType(Enum):
@@ -93,6 +95,9 @@ def performConvol(imagePath, kernel, imageType = InputImageType.GRAY, kernel_cen
     cv2.destroyAllWindows()
 
 
+
+
+
 kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5, cx = -1, cy = -1 )
 # print("Gaussian filter")
 # print(kernel)
@@ -105,7 +110,7 @@ kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5, cx = -1, cy = 
 # print("Laplacian filter")
 # print(kernel)
 
-kernel = generateLogKernel(sigma = 1.4)
+#kernel = generateLogKernel(sigma = 1.4)
 # print("LoG filter")
 # print(kernel)
 
@@ -113,5 +118,30 @@ kernel = generateLogKernel(sigma = 1.4)
 # print("Sobel filter")
 # print(kernel)
 
-performConvol('ClassWork\\image_girl.jpg',kernel=kernel, imageType=InputImageType.GRAY, kernel_center = (0,0))
+#performConvol('ClassWork\\image_girl.jpg',kernel=kernel, imageType=InputImageType.GRAY, kernel_center = (0,0))
 #performConvol('image_girl.jpg',kernel=kernel, imageType=InputImageType.GRAY)
+
+
+
+def find_difference(image1, image2):
+    
+    image1 = cv2.resize(image1, (image2.shape[1], image2.shape[0]))
+    difference = cv2.absdiff(image1, image2)
+    difference = normalize(difference)
+    
+    cv2.imshow('Difference', difference)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+image1 = cv2.imread('ClassWork\\table_1.jpg')
+image2 = cv2.imread('ClassWork\\table_2.jpg')
+find_difference(image1=image1, image2=image2)
+
+
+
+
+
+
+
