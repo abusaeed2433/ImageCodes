@@ -32,7 +32,7 @@ def convolve_hsv(image, kernel, kernel_center=(-1,-1)):
     merged_hsv = merge_hsv(h=hue_nor, s=sat_nor, v=val_nor)
     #merged_rgb = hsv_to_rgb(merge_hsv)
     
-    orignial_rgb = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+    #orignial_rgb = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
     merged_rgb = cv2.cvtColor(merged_hsv, cv2.COLOR_HSV2BGR)
     
     cv2.imshow("Original(HSV) image", image)

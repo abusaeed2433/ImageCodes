@@ -33,7 +33,7 @@ def generateGaussianKernel(sigmaX, sigmaY, MUL = 7):
     
     return (kernel, formatted_kernel)
 
-def generateMeanKernel(rows = 3, cols = 3):
+def generateMeanKernel(rows = 3, cols = 3):#odd
     formatted_kernel = np.zeros( (rows, cols) )
 
     for x in range(0, rows):
@@ -86,24 +86,24 @@ def generateSobelKernel( horiz = True ):
         [-2, 0, 2],
         [-1, 0, 1]
     ])
-    
+
     sobel_y = np.array([
         [1, 2, 1],
         [ 0,  0,  0],
         [-1, -2, -1]
     ])
-    
+
     return sobel_x if horiz else sobel_y
 
 def testKernel():
-    #kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 7)
-    #print(kernel)
+    #kernel, formatted_kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5)
+    #print(formatted_kernel)
     
     #kernel = generateMeanKernel( rows = 5, cols = 5 )
     #print(kernel)
     
-    #kernel = generateLaplacianKernel( negCenter = False )
-    #print(kernel)
+    #kernel,formatted_kernel = generateLaplacianKernel( negCenter = False )
+    #print(formatted_kernel)
     
     #kernel = generateLogKernel(1.4)
     #print(kernel)

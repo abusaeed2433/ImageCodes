@@ -189,7 +189,7 @@ def start():
         kernel_name = kernel_names[index]
         
         if kernel_name.lower() == "sobel" :
-            showSobelKernel()
+            #showSobelKernel()
             kernel_center = get_kernel_center()
             perform_sobel(imagePath=image_path, conv_type=operation_type, kernel_center=kernel_center)
         else:
@@ -201,4 +201,4 @@ def start():
         print("Completed")
 
 
-start()
+#start()

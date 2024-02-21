@@ -56,8 +56,8 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
             N = kernel_width // 2
             for kx in range( -N, N+1):
                 for ky in range( -N, N+1 ):
-                    rel_pos_in_kernel_x = kx + N # 0
-                    rel_pos_in_kernel_y = ky + N # 0
+                    rel_pos_in_kernel_x = kx + N # x-i
+                    rel_pos_in_kernel_y = ky + N # y-j
                     
                     rel_pos_in_image_x = N - kx # 2
                     rel_pos_in_image_y = N - ky # 2
@@ -102,5 +102,5 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
 #     [0,0,0]
 # ])
 
-# out = convolve(image=image, kernel=kernel,kernel_center=(1,1))
+# out = convolve(image=image, kernel=kernel,kernel_center=(0,0))
 # print(out)
