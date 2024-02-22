@@ -17,9 +17,10 @@ def perform_sobel(imagePath, conv_type = 1, kernel_center = (-1,-1)):
         image = cv2.imread( imagePath, cv2.IMREAD_GRAYSCALE )
         out = perform_two_sobel(image=image, kernel_center=kernel_center, show_output=True)
     else:
-        image = cv2.imread(imagePath)
+        image = cv2.imread(imagePath,cv2.IMREAD_COLOR)
         
         red, green, blue = extract_rgb(image)
+        #blue, green, red = cv2.split(image)
         
         red_out = perform_two_sobel(image=red,kernel_center=kernel_center)
         green_out = perform_two_sobel(image=green,kernel_center=kernel_center)
@@ -73,14 +74,14 @@ def perform_sobel(imagePath, conv_type = 1, kernel_center = (-1,-1)):
 def perform_two_sobel(image, kernel_center, show_output = False):
     kernel_horiz = generateSobelKernel(horiz=True)
     image_horiz = convolve(image=image, kernel=kernel_horiz, kernel_center=kernel_center)
-    image_horiz = normalize(image_horiz)
+    #image_horiz = normalize(image_horiz)
         
     if show_output:
         cv2.imshow('Horiz image', image_horiz)
 
     kernel_vert = generateSobelKernel(horiz=False)
     image_vert  = convolve(image=image, kernel=kernel_vert, kernel_center=kernel_center)
-    image_vert = normalize(image_vert)
+    #image_vert = normalize(image_vert)
 
     if show_output:
         cv2.imshow('Vertical image', image_vert)    
@@ -115,5 +116,5 @@ def showSobelKernel():
     print("Vertical sobel kernel")
     print(kernel_vert)
 
-#image_path = '.\images\\lena.jpg'
-#perform_sobel(imagePath=image_path, conv_type=2, kernel_center=(0,0))
+# image_path = '.\images\\lena.jpg'
+# perform_sobel(imagePath=image_path, conv_type=2, kernel_center=(-1,-1))

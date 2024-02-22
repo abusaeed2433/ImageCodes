@@ -8,6 +8,12 @@ from convolution import convolve
 
 def convolve_rgb(image, kernel, kernel_center=(-1,-1)):
     red, green, blue = extract_rgb(image)
+    
+    cv2.imshow("red",red)
+    cv2.imshow("green",green)
+    cv2.imshow("blue",blue)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     red_conv = convolve(image=red, kernel=kernel, kernel_center=kernel_center)
     red_nor = normalize(red_conv)
@@ -34,9 +40,13 @@ def convolve_rgb(image, kernel, kernel_center=(-1,-1)):
     return merged
 
 
-#image_path = '.\images\\shape.jpg'
-#image = cv2.imread( image_path )
+# image_path = '.\images\\shape.jpg'
+# image = cv2.imread( image_path )
 
-#kernel = generateGaussianKernel(sigmaX=1,sigmaY=1)
+# kernel,formatted_kernel = generateGaussianKernel(sigmaX=1,sigmaY=1)
 
-#convolve_rgb(image=image, kernel=kernel, kernel_center=(-1,-1))
+# cv2.imshow("Image",image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+# convolve_rgb(image=image, kernel=kernel, kernel_center=(-1,-1))
