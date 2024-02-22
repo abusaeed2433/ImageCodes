@@ -30,6 +30,7 @@ def convolve_hsv(image, kernel, kernel_center=(-1,-1)):
     cv2.destroyAllWindows()
     
     merged_hsv = merge_hsv(h=hue_nor, s=sat_nor, v=val_nor)
+    #merged_hsv = merge_hsv(h=hue, s=sat, v=val)
     #merged_rgb = hsv_to_rgb(merge_hsv)
     
     #orignial_rgb = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)

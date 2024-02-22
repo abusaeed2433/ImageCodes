@@ -3,7 +3,7 @@ import math
 import numpy as np
 import scipy.ndimage as ndimage
 
-def generateGaussianKernel(sigmaX, sigmaY, MUL = 7):
+def generateGaussianKernel(sigmaX, sigmaY, MUL = 5):
     w = int(sigmaX * MUL) | 1
     h = int(sigmaY * MUL) | 1
     
@@ -110,17 +110,18 @@ def testKernel():
     #kernel, formatted_kernel = generateGaussianKernel( sigmaX = 1, sigmaY = 1, MUL = 5)
     #print(formatted_kernel)
     
-    #kernel = generateMeanKernel( rows = 5, cols = 5 )
-    #print(kernel)
+    # kernel,format = generateMeanKernel( rows = 5, cols = 5 )
     
-    #kernel,formatted_kernel = generateLaplacianKernel( negCenter = False )
-    #print(formatted_kernel)
+    # kernel,format = generateLaplacianKernel( negCenter = False )
     
-    #kernel = generateLogKernel(1.4)
+    kernel,format = generateLogKernel(1.4)
     #print(kernel)
     
     #kernel = generateSobelKernel( horiz = False )
     #print(kernel)
+    
+    print(kernel)
+    print(format)
     
     print("-")
 

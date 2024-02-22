@@ -35,8 +35,8 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
     # generating output with dummy zeros(0)
     output = np.zeros_like(padded_image, dtype='float32')
     
-    print("Padded image")
-    print(padded_image)
+    #print("Padded image")
+    #print(padded_image)
     
     # xx = 1
     # yy = 2
@@ -74,10 +74,10 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
                     act_pos_in_image_x = rel_pos_in_image_x + image_start_x # 2 + 2 = 4
                     act_pos_in_image_y = rel_pos_in_image_y + image_start_y # 3 + 2 = 5
                     
-                    if( rel_pos_in_kernel_x >= kernel_height or rel_pos_in_kernel_y >= kernel_width):
-                        print("Outside")
-                        print(rel_pos_in_kernel_x, rel_pos_in_kernel_y)
-                        print(kernel)
+                    # if( rel_pos_in_kernel_x >= kernel_height or rel_pos_in_kernel_y >= kernel_width):
+                    #     print("Outside")
+                    #     print(rel_pos_in_kernel_x, rel_pos_in_kernel_y)
+                    #     print(kernel)
                     
                     k_val = kernel[ rel_pos_in_kernel_x ][ rel_pos_in_kernel_y ]
                     i_val = padded_image[ act_pos_in_image_x ][ act_pos_in_image_y ]
@@ -89,8 +89,8 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
                     sum +=  k_val * i_val
             output[x,y] = sum
 
-    print("Output before cropping")
-    print(output)
+    # print("Output before cropping")
+    # print(output)
     # Crop the output to the original image size
     out = output[kernel_center[0]:-kernel_height + kernel_center[0] + 1, kernel_center[1]:-kernel_width + kernel_center[1] + 1]
     
