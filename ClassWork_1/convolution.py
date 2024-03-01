@@ -63,8 +63,10 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
             sum = 0
             NX = kernel_height // 2
             NY = kernel_width // 2
-            for kx in range( -NX, NX+1):
-                for ky in range( -NY, NY+1 ):
+            # for kx in range( -NX, NX+1):
+            #     for ky in range( -NY, NY+1 ):
+            for kx in range(0, kernel_height):
+                for ky in range(0, kernel_width):
                     rel_pos_in_kernel_x = kx + NX # x-i
                     rel_pos_in_kernel_y = ky + NY # y-j
                     
@@ -74,13 +76,10 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
                     act_pos_in_image_x = rel_pos_in_image_x + image_start_x # 2 + 2 = 4
                     act_pos_in_image_y = rel_pos_in_image_y + image_start_y # 3 + 2 = 5
                     
-                    # if( rel_pos_in_kernel_x >= kernel_height or rel_pos_in_kernel_y >= kernel_width):
-                    #     print("Outside")
-                    #     print(rel_pos_in_kernel_x, rel_pos_in_kernel_y)
-                    #     print(kernel)
-                    
-                    k_val = kernel[ rel_pos_in_kernel_x ][ rel_pos_in_kernel_y ]
-                    i_val = padded_image[ act_pos_in_image_x ][ act_pos_in_image_y ]
+                    # k_val = kernel[ rel_pos_in_kernel_x ][ rel_pos_in_kernel_y ]
+                    # i_val = padded_image[ act_pos_in_image_x ][ act_pos_in_image_y ]
+                    k_val = kernel[ kx ][ ky ]
+                    i_val = padded_image[ kx+image_start_x ][ ky+image_start_y ]
                     
                     # if x == 1 and y == 2:
                     #     #print(k_val, "*", i_val)
@@ -92,9 +91,9 @@ def convolve(image, kernel, kernel_center = (-1,-1)):
     # print("Output before cropping")
     # print(output)
     # Crop the output to the original image size
-    out = output[kernel_center[0]:-kernel_height + kernel_center[0] + 1, kernel_center[1]:-kernel_width + kernel_center[1] + 1]
+    #out = output[kernel_center[0]:-kernel_height + kernel_center[0] + 1, kernel_center[1]:-kernel_width + kernel_center[1] + 1]
     
-    return out
+    return output
 
 
 # image = np.array([

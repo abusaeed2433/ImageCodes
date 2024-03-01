@@ -77,8 +77,8 @@ def generateLogKernel(sigma, MUL = 7):
     
     for x in range(n):
         for y in range(n):
-            dx = x - center
-            dy = y - center
+            dx = abs(x - center)
+            dy = abs(y - center)
             
             part2 = (dx**2 + dy**2) / (2 * sigma**2)
             
