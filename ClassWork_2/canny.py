@@ -121,11 +121,42 @@ def perform_canny(image_path, sigma):
     cv2.destroyAllWindows()
     
 
+def choose_option(list, message = "Select an option", error_message="Invalid index. Restarting..\n"):
+    for i in range( len(list) ):
+        print(f"{i}. {list[i]}", end=" | ")
+    print()
+    
+    print(message, end='')
+    index = int(input())
+    
+    if( index >= len(list) ):
+        if error_message != None:
+            print(error_message)
+        return -1
+    
+    val = list[index]
+    print(f"`{val}` is selected <-----------------------\n")
+    return index
+
 def start():
-    # image_path = '.\images\\lena_again.png'
-    # image_path = '.\images\\medium.png'
-    image_path = '.\images\\shape.jpg'
-    # image_path = '.\images\\lena_git.jpg'
-    perform_canny(image_path=image_path, sigma=1)
+    main_options = ['start', 'exit']
+    image_names = ['cat.jpg', 'girl_with_board.png', 'lena.jpg', 'lines.jpg', 'shape.jpg']
+    
+    while( True ):
+        index = choose_option(main_options, "Enter 0 to continue: ", error_message="Stopped")
+        if index != 0:
+            break
+        
+        index = choose_option(image_names, message="Select an image: ")
+        if index == -1:
+            continue
+        image_name = image_names[index]
+        image_path = '.\images\\'+image_name
+        
+        print("Enter the value of sigma: ", end=' ')
+        sigma = float( input() )
+        
+        perform_canny(image_path=image_path, sigma=sigma)
+        print("Completed")
 
 start()

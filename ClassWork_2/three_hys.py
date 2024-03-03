@@ -41,7 +41,7 @@ def perform_hysteresis(image, weak, strong=255):
                 else:
                     out[i, j] = 0
     return out
-    
+
 
 def start():
     image_path = 'images\suppressed.jpg'
