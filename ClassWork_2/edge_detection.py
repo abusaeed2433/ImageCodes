@@ -64,7 +64,7 @@ def merge(image_horiz, image_vert):
             res = math.sqrt( dx**2 + dy**2 )
             out[x,y] = res
 
-    out = normalize(out)
+    #out = normalize(out)
     return out
 
 def find_avg(image, t = -1):
