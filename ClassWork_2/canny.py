@@ -27,15 +27,15 @@ def perform_edge_detection(image):
 
     merged_image_nor = normalize(merged_image)
 
-    t = find_threeshold(image=merged_image_nor)
-    print(f"Threeshold {t}")
-    final_out = make_binary(t=t,image=merged_image_nor, low = 0, high = 100)
+    # t = find_threeshold(image=merged_image_nor)
+    # print(f"Threeshold {t}")
+    # final_out = make_binary(t=t,image=merged_image_nor, low = 0, high = 100)
     
     cv2.imshow("X derivative", normalize(conv_x))
     cv2.imshow("Y derivative", normalize(conv_y))
     
     cv2.imshow("Merged", merged_image_nor)
-    cv2.imshow("Threesholded", final_out)
+    # cv2.imshow("Threesholded", final_out)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -53,6 +53,7 @@ def perform_non_maximum_suppression(image, theta):
     
     angle = theta * 180. / np.pi        # max -> 180, min -> -180
 
+    c1 = c2 = c3 = c4 = 0
     for i in range(1,M-1):
         for j in range(1,N-1):
             q = 0
@@ -63,23 +64,28 @@ def perform_non_maximum_suppression(image, theta):
             if ( -22.5 <= ang < 22.5) or ( 157.5 <= ang <= 180) or (-180 <= ang <= -157.5):
                 r = image[i, j-1]
                 q = image[i, j+1]
+                c1 += 1
 
             elif (  -67.5 <= ang <= -22.5 ) or ( 112.5 <= ang <= 157.5):
                 r = image[i-1, j+1]
                 q = image[i+1, j-1]
+                c2 += 1
 
             elif ( 67.5 <= ang <= 112.5) or ( -112.5 <= ang <= -67.5 ):
                 r = image[i-1, j]
                 q = image[i+1, j]
+                c3 += 1
 
             elif ( 22.5 <= ang < 67.5 ) or ( -167.5 <= ang <= -112.5 ):
                 r = image[i+1, j+1]
                 q = image[i-1, j-1]
+                c4 += 1
 
             if (image[i,j] >= q) and (image[i,j] >= r):
                 out[i,j] = image[i,j]
             else:
                 out[i,j] = 0
+    print(f"{c1},{c2},{c3},{c4}")
     return out
 
 def perform_canny(image_path, sigma):
@@ -102,16 +108,19 @@ def perform_canny(image_path, sigma):
     suppressed = perform_non_maximum_suppression(image=image_sobel,theta=theta)
     
     # Threesholding and hysteresis
-    threes, weak, strong = perform_threshold(image=suppressed)
-    final_output = perform_hysteresis( image=threes, weak=weak, strong=strong )
+    threes = find_threeshold(image=suppressed)
+    print(f"Threeshold: ${threes}")
+    
+    threes_image, weak, strong = perform_threshold(image=suppressed,threes=threes)
+    final_output = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
         
     cv2.imshow("After sobel", normalize(image_sobel) )
     cv2.imshow("Non maximum suppression", normalize(suppressed) )
-    cv2.imshow("Threesholded", normalize(threes) )
+    cv2.imshow("Threesholded", normalize(threes_image) )
     cv2.imshow("Final", normalize(final_output))
 
     
-    # cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\ClassWork_2\\images\\suppressed.jpg',suppressed)
+    cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\ClassWork_2\\images\\suppressed.jpg',suppressed)
     cv2.waitKey(0)
     
     cv2.destroyAllWindows()
@@ -135,5 +144,25 @@ def choose_option(list, message = "Select an option", error_message="Invalid ind
     return index
 
 
-image_path = '.\images\\leaves.png'
-perform_canny(image_path=image_path, sigma=1)
+def start():
+    main_options = ['start', 'exit']
+    image_names = ['cat.jpg', 'girl_with_board.png', 'lena.jpg', 'lines.jpg', 'shape.jpg']
+    
+    while( True ):
+        index = choose_option(main_options, "Enter 0 to continue: ", error_message="Stopped")
+        if index != 0:
+            break
+        
+        index = choose_option(image_names, message="Select an image: ")
+        if index == -1:
+            continue
+        image_name = image_names[index]
+        image_path = '.\images\\'+image_name
+        
+        print("Enter the value of sigma: ", end=' ')
+        sigma = float( input() )
+        
+        perform_canny(image_path=image_path, sigma=sigma)
+        print("Completed")
+
+start()

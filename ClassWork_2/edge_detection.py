@@ -96,14 +96,15 @@ def find_threeshold(image):
         for y in range(w):
             px = image[x,y]
             total += px
-    t = total / (h * w)
+    oldT = total / (h * w)
     
-    dif = find_avg(image=image,t=t)
-    while( abs(dif - t) < 0.1 ** 4 ) :
-        t = dif
-        dif = find_avg(image=image,t=t)
-    
-    return dif
+    newT = find_avg(image=image,t=oldT)
+    while( abs(newT - oldT) > 0.1 ** 6 ) :
+        oldT = newT
+        newT = find_avg(image=image,t=oldT)
+        print(f"Old: {oldT}, New: {newT}")
+
+    return newT
 
 def make_binary(t, image, low = 0, high = 255):
     out = image.copy()
