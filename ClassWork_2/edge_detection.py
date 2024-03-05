@@ -8,11 +8,6 @@ from convolution import convolve
 from kernal_generator import *
 
 
-def convolve_library(image, kernel):
-    copied = image.copy()
-    img = cv2.filter2D(src=copied, ddepth=-1, kernel=kernel) 
-    return img
-
 def get_kernel():
     sigma = 0.7
     kernel,formatted_kernel = generateGaussianKernel(sigmaX=sigma, sigmaY=sigma, MUL=7)
@@ -67,7 +62,7 @@ def merge(image_horiz, image_vert):
     #out = normalize(out)
     return out
 
-def find_avg(image, t = -1):
+def find_next_threeshold(image, t = -1):
     total1 = 0
     total2 = 0
     c1 = 0
@@ -98,10 +93,10 @@ def find_threeshold(image):
             total += px
     oldT = total / (h * w)
     
-    newT = find_avg(image=image,t=oldT)
+    newT = find_next_threeshold(image=image,t=oldT)
     while( abs(newT - oldT) > 0.1 ** 6 ) :
         oldT = newT
-        newT = find_avg(image=image,t=oldT)
+        newT = find_next_threeshold(image=image,t=oldT)
         print(f"Old: {oldT}, New: {newT}")
 
     return newT
@@ -112,54 +107,41 @@ def make_binary(t, image, low = 0, high = 255):
     for x in range(h):
         for y in range(w):
             v = image[x,y]
-            
             out[x,y] = high if v > t else low
-    
     return out
 
 
-def plot_historgram(image):
-    hist = cv2.calcHist([image], [0], None, [256], [0, 256])
-
-    # Plot histogram
-    plt.figure()
-    plt.title("Grayscale Histogram")
-    plt.xlabel("Bins")
-    plt.ylabel("# of Pixels")
-    plt.plot(hist)
-    plt.xlim([0, 256])
-    plt.show()
-
 def start():
-    image_path = '.\images\\lena_again.png'
+    #image_path = '.\images\\lena.jpg'
     
-    #image_path = '.\images\\lines.jpg'
+    image_path = '.\images\\lines.jpg'
     
     image = cv2.imread( image_path, cv2.IMREAD_GRAYSCALE)
+    cv2.imshow("Input", image)
     
     image = cv2.GaussianBlur(image, (3,3),0)
-    cv2.imshow("Processed image", image)
+    cv2.imshow("Blurred", image)
 
     kernel_x, kernel_y = get_kernel()
-    # kernel_x = generateSobelKernel(horiz=True)
-    # kernel_y = generateSobelKernel(horiz=False)
 
     conv_x = convolve(image=image, kernel=kernel_x)
     conv_y = convolve(image=image, kernel=kernel_y)
+    
+    kernel, _ = generateGaussianKernel(sigmaX=.7,sigmaY=.7,MUL=7)
+    conv_x = convolve(image=conv_x,kernel=kernel)
+    conv_y = convolve(image=conv_y,kernel=kernel)
     out = merge(conv_x, conv_y)
     
-    conv_x_nor = normalize(conv_x)
-    conv_y_nor = normalize(conv_y)
     out_nor = normalize(out)
 
-    cv2.imshow("X derivative", conv_x_nor)
-    cv2.imshow("Y derivative", conv_y_nor)
+    cv2.imshow("X derivative", normalize(conv_x))
+    cv2.imshow("Y derivative", normalize(conv_y))
     cv2.imshow("Merged", out_nor)
 
     #plot_historgram(out)
     t = find_threeshold(image=out_nor)
     print(f"Threeshold {t}")
-    final_out = make_binary(t=t,image=out_nor)
+    final_out = make_binary(t=t*0.8,image=out_nor)
     cv2.imshow("Threesholded", final_out)
 
     cv2.waitKey(0)
