@@ -10,13 +10,13 @@ from three_hys import perform_threshold, perform_hysteresis
 
 from edge_detection import get_kernel, merge, find_threeshold, make_binary
 
-def perform_edge_detection(image):
-    kernel_x, kernel_y = get_kernel()
+def perform_edge_detection(image, sigma = 1):
+    kernel_x, kernel_y = get_kernel(sigma=sigma)
 
     conv_x = convolve(image=image, kernel=kernel_x)
     conv_y = convolve(image=image, kernel=kernel_y)
     
-    kernel, _ = generateGaussianKernel(sigmaX=1,sigmaY=1,MUL=5)
+    kernel, _ = generateGaussianKernel(sigmaX=sigma,sigmaY=sigma,MUL=5, show=True)
     conv_x = convolve(image=conv_x,kernel=kernel)
     conv_y = convolve(image=conv_y,kernel=kernel)
     
@@ -102,7 +102,7 @@ def perform_canny(image_path, sigma):
     cv2.waitKey(0)
     
     # Gradient Calculation
-    image_sobel, theta = perform_edge_detection(image) 
+    image_sobel, theta = perform_edge_detection(image,sigma=1)
     
     # Non Maximum Suppression
     suppressed = perform_non_maximum_suppression(image=image_sobel,theta=theta)
@@ -114,9 +114,10 @@ def perform_canny(image_path, sigma):
     threes_image, weak, strong = perform_threshold(image=suppressed,threes=threes)
     final_output = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
         
-    cv2.imshow("After sobel", normalize(image_sobel) )
+    cv2.imshow("Before Suppression", normalize(image_sobel) )
     cv2.imshow("Non maximum suppression", normalize(suppressed) )
     cv2.imshow("Threesholded", normalize(threes_image) )
+    cv2.imshow("Input", main_image)
     cv2.imshow("Final", normalize(final_output))
 
     

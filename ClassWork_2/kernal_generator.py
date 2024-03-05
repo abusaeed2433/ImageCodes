@@ -3,7 +3,7 @@ import math
 import numpy as np
 import scipy.ndimage as ndimage
 
-def generateGaussianKernel(sigmaX, sigmaY, MUL = 7):
+def generateGaussianKernel(sigmaX, sigmaY, MUL = 7, show=False):
     w = int(sigmaX * MUL) | 1
     h = int(sigmaY * MUL) | 1
     
@@ -28,8 +28,9 @@ def generateGaussianKernel(sigmaX, sigmaY, MUL = 7):
     formatted_kernel = kernel / np.min(kernel)
     formatted_kernel = formatted_kernel.astype(int)
 
-    print("Formatted gaussian filter")
-    print(formatted_kernel)
+    if show:
+        print("Formatted gaussian filter")
+        print(formatted_kernel)
     
     return (kernel, formatted_kernel)
 

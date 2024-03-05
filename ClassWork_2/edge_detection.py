@@ -8,8 +8,7 @@ from convolution import convolve
 from kernal_generator import *
 
 
-def get_kernel():
-    sigma = 0.7
+def get_kernel(sigma = 0.7):
     kernel,formatted_kernel = generateGaussianKernel(sigmaX=sigma, sigmaY=sigma, MUL=7)
     
     h = len(kernel)
@@ -42,9 +41,9 @@ def get_kernel():
     dr1 = (kernel_x / mn1).astype(int)
     dr2 = (kernel_y / mn2).astype(int)
     
-    # print("x &  y")
-    # print(dr1)
-    # print(dr2)
+    print("x &  y")
+    print(dr1)
+    print(dr2)
     return (kernel_y,kernel_x)
 
 def merge(image_horiz, image_vert):
@@ -62,7 +61,7 @@ def merge(image_horiz, image_vert):
     #out = normalize(out)
     return out
 
-def find_next_threeshold(image, t = -1):
+def find_next_threeshold(image, t):
     total1 = 0
     total2 = 0
     c1 = 0
