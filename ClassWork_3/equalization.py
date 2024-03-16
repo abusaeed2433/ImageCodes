@@ -20,7 +20,7 @@ def show_all(image, c):
         
     h, w = image.shape
     
-    total = h * w
+    total = np.sum(hist)
     
     cv2.imshow("Image",image)
     cv2.waitKey(0)
