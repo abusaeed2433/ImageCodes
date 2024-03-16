@@ -10,6 +10,8 @@ from kernal_generator import *
 
 def get_kernel(sigma = 0.7):
     kernel,formatted_kernel = generateGaussianKernel(sigmaX=sigma, sigmaY=sigma, MUL=7)
+    print("Gauss")
+    print(formatted_kernel)
     
     h = len(kernel)
     
@@ -42,8 +44,8 @@ def get_kernel(sigma = 0.7):
     dr2 = (kernel_y / mn2).astype(int)
     
     print("x &  y")
-    print(dr1)
     print(dr2)
+    print(dr1)
     return (kernel_y,kernel_x)
 
 def merge(image_horiz, image_vert):
@@ -186,3 +188,5 @@ def doc_code():
 #start()
 #test_convolve()#
 #doc_code()
+
+kernel_x, kernel_y = get_kernel(sigma=0.7)
