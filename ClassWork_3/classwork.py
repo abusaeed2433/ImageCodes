@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import math
 from gaussian import generateGaussianHistogram, plot
 
 def take_sigma_mu(first = True):
@@ -42,6 +43,23 @@ def calculate_hist_pdf_cdf(image, input_hist = None):
     
     return hist, pdf, cdf
 
+def generate_mapping(input_cdf, target_cdf):
+    in_map = np.zeros(256)
+    
+    for x in range(256):
+        min_abs = math.inf
+        inten = x        
+        val = input_cdf[x]
+        
+        for y in range(256):
+            dif = abs(val - target_cdf[y])
+            if dif < min_abs:
+                min_abs = dif
+                inten = y
+            # idx = np.abs(cdf - input_cdf[x]).argmin()
+        in_map[x] = inten
+    return in_map
+
 def start(image):
     
     sigma1, mu1 = take_sigma_mu()
@@ -52,15 +70,15 @@ def start(image):
     # plot(data=df1,title='Gaussian - 1', x_label='Value',y_label='Density')
     # plot(data=df2,title='Gaussian - 2', x_label='Value',y_label='Density')
     # plot(data=res,title='Double Gaussian Histogram', x_label='Value',y_label='Density')
-        
-    
-    hist, pdf, cdf = calculate_hist_pdf_cdf(image=None, input_hist=hist)
+
+    target_hist, target_pdf, target_cdf = calculate_hist_pdf_cdf(image=None, input_hist=hist)
     input_hist, input_pdf, input_cdf = calculate_hist_pdf_cdf(image=image)
     
-    in_map = np.zeros(256)
-    for i in range(256):
-        idx = np.abs(cdf - input_cdf[i]).argmin()
-        in_map[i] = idx
+    # plot(hist,title="Gaussian hist")
+    # plot(pdf,title="Gaussian pdf")
+    # plot(cdf,title="Gaussian cdf")
+    
+    in_map = generate_mapping(input_cdf=input_cdf, target_cdf=target_cdf)
 
     h,w = image.shape
     output_image = image.copy()
@@ -74,7 +92,6 @@ def start(image):
     cv2.imshow("Output Image", output_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
     
     out_hist, out_pdf, out_cdf = calculate_hist_pdf_cdf(image=output_image)
     
