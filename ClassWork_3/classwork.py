@@ -32,7 +32,7 @@ def calculate_hist_pdf_cdf(image, input_hist = None):
         hist = input_hist
 
     total = np.sum(hist)
-        
+
     pdf = hist.copy()
     for i in range(len(hist)):
         pdf[i] = hist[i] / float(total)
@@ -48,7 +48,7 @@ def generate_mapping(input_cdf, target_cdf):
     
     for x in range(256):
         min_abs = math.inf
-        inten = x        
+        inten = x     
         val = input_cdf[x]
         
         for y in range(256):
@@ -67,16 +67,12 @@ def start(image):
     
     df1, df2, hist = generateGaussianHistogram(sigma1=sigma1,mu1=mu1,sigma2=sigma2,mu2=mu2)
     
-    # plot(data=df1,title='Gaussian - 1', x_label='Value',y_label='Density')
-    # plot(data=df2,title='Gaussian - 2', x_label='Value',y_label='Density')
-    # plot(data=res,title='Double Gaussian Histogram', x_label='Value',y_label='Density')
+    plot(data=df1,title='Gaussian - 1')
+    plot(data=df2,title='Gaussian - 2')
+    plot(data=hist,title='Double Gaussian Histogram')
 
     target_hist, target_pdf, target_cdf = calculate_hist_pdf_cdf(image=None, input_hist=hist)
     input_hist, input_pdf, input_cdf = calculate_hist_pdf_cdf(image=image)
-    
-    # plot(hist,title="Gaussian hist")
-    # plot(pdf,title="Gaussian pdf")
-    # plot(cdf,title="Gaussian cdf")
     
     in_map = generate_mapping(input_cdf=input_cdf, target_cdf=target_cdf)
 
@@ -90,6 +86,9 @@ def start(image):
       
     cv2.imshow("Input Image", image)
     cv2.imshow("Output Image", output_image)
+    # cv2.imwrite('.\images\\input_image.png',image)
+    # cv2.imwrite('.\images\\output_image.png',output_image)
+    
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     

@@ -41,8 +41,8 @@ def generateGaussianHistogram(sigma1, mu1, sigma2, mu2):
     
     for x in range(256):
         res[x] = df1[x] + df2[x]
-        if x % 10 == 0:
-            print(f"{x}: {df1[x]} + {df2[x]} = {res[x]}")
+        # if x % 10 == 0:
+        #     print(f"{x}: {df1[x]} + {df2[x]} = {res[x]}")
 
     res = res / np.min(res)
     return df1, df2, res
