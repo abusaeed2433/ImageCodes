@@ -44,7 +44,7 @@ def generateGaussianHistogram(sigma1, mu1, sigma2, mu2):
         # if x % 10 == 0:
         #     print(f"{x}: {df1[x]} + {df2[x]} = {res[x]}")
 
-    res = res / np.min(res)
+    res = res / np.min(res) / 10
     return df1, df2, res
 
 # df1, df2, res = generateGaussianHistogram(8,30,20,165)

@@ -113,9 +113,9 @@ def make_binary(t, image, low = 0, high = 255):
 
 
 def start():
-    #image_path = '.\images\\lena.jpg'
+    image_path = '.\images\\lena.jpg'
     
-    image_path = '.\images\\lines.jpg'
+    # image_path = '.\images\\lines.jpg'
     
     image = cv2.imread( image_path, cv2.IMREAD_GRAYSCALE)
     cv2.imshow("Input", image)
@@ -136,8 +136,13 @@ def start():
     out_nor = normalize(out)
 
     cv2.imshow("X derivative", normalize(conv_x))
+    cv2.imwrite("x_derivative.png", normalize(conv_x))
+    
     cv2.imshow("Y derivative", normalize(conv_y))
+    cv2.imwrite("y_derivative.png", normalize(conv_y))
+    
     cv2.imshow("Merged", out_nor)
+    cv2.imwrite("Merged.png", out_nor)
 
     #plot_historgram(out)
     t = find_threeshold(image=out_nor)
@@ -185,8 +190,8 @@ def doc_code():
     
     return 0
 
-#start()
+# start()
 #test_convolve()#
 #doc_code()
 
-kernel_x, kernel_y = get_kernel(sigma=0.7)
+#kernel_x, kernel_y = get_kernel(sigma=0.7)

@@ -31,14 +31,14 @@ def perform_edge_detection(image, sigma = 1):
     # print(f"Threeshold {t}")
     # final_out = make_binary(t=t,image=merged_image_nor, low = 0, high = 100)
     
-    cv2.imshow("X derivative", normalize(conv_x))
-    cv2.imshow("Y derivative", normalize(conv_y))
+    # cv2.imshow("X derivative", normalize(conv_x))
+    # cv2.imshow("Y derivative", normalize(conv_y))
     
-    cv2.imshow("Merged", merged_image_nor)
+    # cv2.imshow("Merged", merged_image_nor)
     # cv2.imshow("Threesholded", final_out)
     
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     #return final_out, theta
     return merged_image, theta
@@ -88,18 +88,19 @@ def perform_non_maximum_suppression(image, theta):
     print(f"{c1},{c2},{c3},{c4}")
     return out
 
-def perform_canny(image_path, sigma):
+def perform_canny(image, sigma=1, show=True):
     
     # Gray Scale Coversion
-    image = cv2.imread( image_path, cv2.IMREAD_GRAYSCALE)
+    #image = cv2.imread( image_path, cv2.IMREAD_GRAYSCALE)
     main_image = image.copy()
     
     # Perform Gaussian Blurr
     kernel, _ = generateGaussianKernel(sigmaX=sigma,sigmaY=sigma,MUL=7)
     image = convolve(image=image, kernel=kernel)
     
-    cv2.imshow("Blurred Input Image", normalize(image))
-    cv2.waitKey(0)
+    if show:
+        cv2.imshow("Blurred Input Image", normalize(image))
+        cv2.waitKey(0)
     
     # Gradient Calculation
     image_sobel, theta = perform_edge_detection(image,sigma=1)
@@ -113,6 +114,9 @@ def perform_canny(image_path, sigma):
     
     threes_image, weak, strong = perform_threshold(image=suppressed,threes=threes)
     final_output = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
+    
+    
+    return normalize(final_output)
         
     cv2.imshow("Before Suppression", normalize(image_sobel) )
     cv2.imshow("Non maximum suppression", normalize(suppressed) )
@@ -162,8 +166,8 @@ def start():
         
         print("Enter the value of sigma: ", end=' ')
         sigma = float( input() )
-        
-        perform_canny(image_path=image_path, sigma=sigma)
+        image = cv2.imread(image_path,0)
+        perform_canny(image=image, sigma=sigma)
         print("Completed")
 
-start()
+#start()

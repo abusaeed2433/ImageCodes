@@ -24,6 +24,7 @@ def pad_image(image, kernel_height, kernel_width, kernel_center):
     return padded_image
 
 def convolve(image, kernel, kernel_center = (-1,-1)):
+    #return cv2.filter2D(image, -1, kernel)
     image = image.copy()
     kernel_height, kernel_width = len(kernel), len(kernel[0])
     
