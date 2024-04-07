@@ -1,0 +1,4 @@
+
+1. Single number detection from handwritten text
+2. Traffic light recognition
+3. License plate recognition
