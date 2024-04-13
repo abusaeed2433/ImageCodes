@@ -10,8 +10,8 @@ from convolution import normalize
 from canny import find_threeshold, perform_threshold, perform_hysteresis
 
 from equalization import equalize
-from helper import read_templates, perform_matching, show_image 
-from segmenter import segment_new
+from helper import read_templates, perform_matching, show_image
+from segmenter import segment_new, get_image_at_segment
 
 
 def segment(image):
@@ -76,23 +76,6 @@ def segment(image):
        
     return image, rects
 
-def get_image_at_segment(image, top_left, bottom_right):
-    
-    h = bottom_right[0] - top_left[0]
-    w = bottom_right[1] - top_left[1]
-    
-    segment = np.ones((h,w))
-    # print(segment.shape)
-    
-    for x in range(h):
-        for y in range(w):
-            ix = x + top_left[0]
-            iy = y + top_left[1]
-            segment[x][y] = image[ix][iy]
-    
-    # cv2.imwrite("Shur.png",segment)
-    # show_image(segment)
-    return segment
 
 def draw_point_at(image, x,y, color = 100):
     indices = ( (-1,-1), (0, -1), (1,-1), (-1,0), (0,0), (1,0), (-1,1), (0,1), (1,1) )
@@ -105,17 +88,18 @@ def draw_point_at(image, x,y, color = 100):
             continue
         image[nx][ny] = color
 
-def annotate_rect_points(image,rects):
+def annotate_rect_points(image, my_segments):
     image = image.copy()
     
-    for rect in rects:
-        for pt in rect:
+    for seg in my_segments:
+        for pt in seg.rect:
             draw_point_at(image, pt[0], pt[1])
     return image
 
-def extract_and_detect_segments(image, rects):
-    for rect in rects:
-        segment = get_image_at_segment(image, rect[0], rect[2])
+def extract_and_detect_segments(image, my_segments):
+    for seg in my_segments:
+        rect = seg.rect
+        segment = get_image_at_segment(image, seg)
         matched_with = perform_matching(segment=segment)
         
         print("matched_with "+str(matched_with))
@@ -131,7 +115,7 @@ def start_detection(image):
     show_image(image=equalized_image, name="Histogram Equalized")
     
     threes = find_threeshold(image=equalized_image)
-    print(f"Threeshold: ${threes}")
+    # print(f"Threeshold: ${threes}")
     
     threes_image, weak, strong = perform_threshold(image=equalized_image,threes=threes)
     thress_image = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
@@ -140,16 +124,16 @@ def start_detection(image):
     show_image(thress_image, "Threesholded")
     
     # cropped, rects = segment(thress_image)
-    cropped, rects = segment_new(thress_image)
+    cropped, my_segments = segment_new(thress_image)
     show_image(cropped, "Cropped")
     
-    for rect in rects:
-        print(rect)
+    # for seg in my_segments:
+    #     print(seg.rect)
     
-    annotated = annotate_rect_points(cropped,rects)
+    annotated = annotate_rect_points(cropped,my_segments)
     show_image(annotated,"Annotated")
     
-    extract_and_detect_segments(thress_image,rects)
+    extract_and_detect_segments(thress_image, my_segments)
 
 
 read_templates()

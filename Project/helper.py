@@ -34,21 +34,25 @@ def perform_matching(segment):
     if h > TEMPLATE_SIZE[1] and w > TEMPLATE_SIZE[0]:
         segment = cv2.resize(segment,TEMPLATE_SIZE,segment)
         templates = read_templates()
+        h = TEMPLATE_SIZE[1]
+        w = TEMPLATE_SIZE[0]
     else:
-        if h >= TEMPLATE_SIZE[1] or w >= TEMPLATE_SIZE[0]:
-            segment = cv2.resize(segment,(w,h),segment)
+        # if h >= TEMPLATE_SIZE[1] or w >= TEMPLATE_SIZE[0]:
         h = min( TEMPLATE_SIZE[1], h)
         w = min( TEMPLATE_SIZE[0], w )
-        templates = read_templates(h=h, w=w)
         
-    h = min( TEMPLATE_SIZE[1], h)
-    w = min( TEMPLATE_SIZE[0], w )
-    
+        segment = cv2.resize(segment,(w,h),segment)
+        templates = read_templates(h=h, w=w)
+
     # print((h,w))
     # print(segment.shape)
     best_template = (-1,0)
     for ti in range( len(templates) ):
         template = templates[ti]
+        # print("Shapes are")
+        # print(template.shape)
+        # print(segment.shape)
+        
         matched = 0
         for x in range(h):
             for y in range(w):
