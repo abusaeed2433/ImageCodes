@@ -5,7 +5,7 @@ from math import pi
 from scipy.integrate import quad_vec
 import matplotlib.animation as animation
 
-value_n = 10 # no of cycles = (2*value_n + 1)
+value_n = 200 # no of cycles = (2*value_n + 1)
 circles = []
 circle_lines = []
 draw_x, draw_y = [], []
@@ -29,7 +29,10 @@ def start_animation(coordinates):
     # # later we will need these data to fix the size of figure
     xlim_data = plt.xlim()
     ylim_data = plt.ylim()
+    
+    plt.show()
 
+    
     # plt.show()
 
     # time data from 0 to 2*PI as x,y is the function of time.
@@ -49,6 +52,7 @@ def start_animation(coordinates):
         coef = (1 / 2*pi) * quad_vec(
                 lambda t: f(t, t_list, x_list, y_list)*np.exp(-n*t*1j), 
                 0, 2*pi, # integral limit
+                limit=100, full_output=1
             )[0] # first element is the integral value
         coeff.append(coef)
 
@@ -76,7 +80,7 @@ def start_animation(coordinates):
     orig_drawing, = ax.plot([], [], 'g-', linewidth=0.5)
 
     # to fix the size of figure so that the figure does not get cropped/trimmed
-    LIMIT = 100
+    LIMIT = 500
     ax.set_xlim(xlim_data[0]-LIMIT, xlim_data[1]+LIMIT)
     ax.set_ylim(ylim_data[0]-LIMIT, ylim_data[1]+LIMIT)
 
