@@ -16,23 +16,25 @@ x_list, y_list = [],[]
 def start_animation(coordinates):
     global value_n, circles, circle_lines, drawing, orig_drawing, x_list, y_list
     
-    x_list, y_list = zip(*coordinates)
+    y_list, x_list = zip(*coordinates)
 
     x_list = x_list - np.mean(x_list)
     y_list = y_list - np.mean(y_list)
+    
+    x_list, y_list = y_list, -x_list
 
     # visualize the contour
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(x_list, y_list)
+    # plt.scatter(x_list, y_list, label='Data Points')
 
     # # later we will need these data to fix the size of figure
     xlim_data = plt.xlim()
     ylim_data = plt.ylim()
     
     plt.show()
-
-    
+        
     # plt.show()
 
     # time data from 0 to 2*PI as x,y is the function of time.

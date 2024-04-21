@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from collections import deque
 import matplotlib.pyplot as plt
 from animator import start_animation
 
@@ -8,32 +9,79 @@ sys.path.append('.\ClassWork_2')
 
 from canny import perform_canny
 
+def spread(image,x,y):
+    h,w = image.shape
+    
+    queue = deque()
+    queue.append( (x,y) )
+    
+    points = []
+    points.append( (x,y) )
+
+    while queue:
+        item = queue.popleft()
+        x = item[0]
+        y = item[1]
+            
+        if image[x,y] != 255:
+            continue
+
+        image[x,y] = 120
+
+        indices = ( (-1,-1), (0, -1), (1,-1), (-1,0), (0,0), (1,0), (-1,1), (0,1), (1,1) )
+
+        for pt in indices:
+            nx = x + pt[0]
+            ny = y + pt[1]
+            if nx < 0 or ny < 0 or nx >= h or ny >= w:
+                continue
+            if image[nx,ny] == 255:
+                queue.append( (nx,ny) )
+                points.append( (nx,ny) )
+
+    return points
+
+def get_contours(image):
+    
+    ret, thresh = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    
+    return contours
+
+
+    contours = []
+    
+    image = image.copy()
+    h,w = image.shape
+    
+    for x in range(h):
+        for y in range(w):
+            if image[x,y] == 255: # white
+                points = spread(image,x,y)
+
+                contours.append( points )
+    
+    return contours
+
+    
 
 def get_edge_points(image):
-    contours, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # print(contours)
-    points = []
+    contours = get_contours(image)
     
-    W_F = 20
+    W_F = 10
     H_F = 15
     
-    for cnt in contours:
-        # if len(points) >= len(cnt):
-        #     continue
-        # points.clear()
-        for pt in cnt:
-            points.append( (pt[0][0]/W_F, pt[0][1]/H_F) )    
-    return points
+    points = []
     
-    # points = []
-    # h,w = image.shape
-    # for x in range(h):
-    #     for y in range(w):
-    #         if(image[x,y] == 255):
-    #             points.append( (y/W_F,x/H_F) )
+    for cnt in contours:
+        if len(points) >= len(cnt):
+            continue
+        points.clear()
+        for pt in cnt:
+            points.append( (pt[0][0]/W_F, pt[0][1]/H_F) )
+            # points.append( (pt[0]/W_F, pt[1]/H_F) )
+    return points
 
-    # return points
 
 def convert_to_fourier(edge_coordinates):
     N = len(edge_coordinates)
@@ -62,15 +110,11 @@ def start(image_path):
     # cv2.imwrite("ClassWork_4\\images\\dog_edge.jpg",edge)
     
     
-    edge = cv2.imread("ClassWork_4\images\\star_edge.png",cv2.COLOR_BGR2GRAY)
-    edge = edge[10:-10, 10:-10]
+    image = cv2.imread("ClassWork_4\images\\dog.jpg",cv2.IMREAD_GRAYSCALE)
     
-    edge_points = get_edge_points(edge)
+    edge_points = get_edge_points(image)
     
-    # print(edge_points)
-    
-    # edge_points = [ (1,1), (100,100), (40,40), (20,30) ]
-    print(len(edge_points))
+    print(f"no of edge points is: {len(edge_points)}")
     
     start_animation(edge_points)
 
