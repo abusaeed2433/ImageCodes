@@ -88,7 +88,7 @@ def perform_non_maximum_suppression(image, theta):
     print(f"{c1},{c2},{c3},{c4}")
     return out
 
-def perform_canny(image, sigma=1, show=True):
+def perform_canny(image, sigma=1, show=True, without_sup = False):
     
     # Gray Scale Coversion
     #image = cv2.imread( image_path, cv2.IMREAD_GRAYSCALE)
@@ -106,8 +106,10 @@ def perform_canny(image, sigma=1, show=True):
     image_sobel, theta = perform_edge_detection(image,sigma=1)
     
     # Non Maximum Suppression
-    suppressed = perform_non_maximum_suppression(image=image_sobel,theta=theta)
-    
+    suppressed = image_sobel
+    if not without_sup:
+        suppressed = perform_non_maximum_suppression(image=image_sobel,theta=theta)
+
     # Threesholding and hysteresis
     threes = find_threeshold(image=suppressed)
     print(f"Threeshold: ${threes}")

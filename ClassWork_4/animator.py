@@ -21,7 +21,7 @@ def start_animation(coordinates):
     x_list = x_list - np.mean(x_list)
     y_list = y_list - np.mean(y_list)
     
-    x_list, y_list = y_list, -x_list
+    x_list, y_list = x_list, -y_list
 
     # visualize the contour
     fig = plt.figure()
@@ -34,8 +34,9 @@ def start_animation(coordinates):
     ylim_data = plt.ylim()
     
     plt.show()
-        
-    # plt.show()
+    
+    # exit(1)
+
 
     # time data from 0 to 2*PI as x,y is the function of time.
     t_list = np.linspace(0, 2*pi, len(x_list)) # now we can relate f(t) -> x,y
@@ -82,7 +83,7 @@ def start_animation(coordinates):
     orig_drawing, = ax.plot([], [], 'g-', linewidth=0.5)
 
     # to fix the size of figure so that the figure does not get cropped/trimmed
-    LIMIT = 500
+    LIMIT = 1000
     ax.set_xlim(xlim_data[0]-LIMIT, xlim_data[1]+LIMIT)
     ax.set_ylim(ylim_data[0]-LIMIT, ylim_data[1]+LIMIT)
 
