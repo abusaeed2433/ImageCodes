@@ -15,61 +15,50 @@ x_list, y_list = [],[]
 
 def start_animation(coordinates):
     global value_n, circles, circle_lines, drawing, orig_drawing, x_list, y_list
-    
+
     y_list, x_list = zip(*coordinates)
 
     x_list = x_list - np.mean(x_list)
     y_list = y_list - np.mean(y_list)
-    
+
     x_list, y_list = x_list, -y_list
 
     # visualize the contour
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(x_list, y_list)
-    # plt.scatter(x_list, y_list, label='Data Points')
 
-    # # later we will need these data to fix the size of figure
+    # later we will need these data to fix the size of figure
     xlim_data = plt.xlim()
     ylim_data = plt.ylim()
     
     plt.show()
-    
-    # exit(1)
-
+    exit(1)
 
     # time data from 0 to 2*PI as x,y is the function of time.
-    t_list = np.linspace(0, 2*pi, len(x_list)) # now we can relate f(t) -> x,y
-
+    t_list = np.linspace(0, 2*pi, len(x_list))
     print(t_list)
 
-    
-    
     # function to generate x+iy at given time t
     def f(t, t_list, x_list, y_list):
         return np.interp(t, t_list, x_list + 1j*y_list)
 
-    print("generating coefficients ...")
+    print("Generating coefficients ...")
     coeff = []
     for n in range(-value_n, value_n+1):
         coef = (1 / 2*pi) * quad_vec(
                 lambda t: f(t, t_list, x_list, y_list)*np.exp(-n*t*1j), 
                 0, 2*pi, # integral limit
-                limit=100, full_output=1
+                limit = 100, full_output=1
             )[0] # first element is the integral value
         coeff.append(coef)
 
     coeff = np.array(coeff)
     print(coeff)
 
-
-    # this is to store the points of last circle of epicycle which draws the required figure
-    
-
     # make figure for animation
     fig, ax = plt.subplots()
 
-    # different plots to make epicycle
     # there are -value_n to value_n numbers of circles
     circles = [ax.plot([], [], 'r-')[0] for i in range(-value_n, value_n+1)]
 
@@ -84,12 +73,14 @@ def start_animation(coordinates):
 
     # to fix the size of figure so that the figure does not get cropped/trimmed
     LIMIT = 1000
-    ax.set_xlim(xlim_data[0]-LIMIT, xlim_data[1]+LIMIT)
-    ax.set_ylim(ylim_data[0]-LIMIT, ylim_data[1]+LIMIT)
+    # ax.set_xlim(xlim_data[0]-LIMIT, xlim_data[1]+LIMIT)
+    # ax.set_ylim(ylim_data[0]-LIMIT, ylim_data[1]+LIMIT)
+    ax.set_xlim(-LIMIT, LIMIT)
+    ax.set_ylim(-LIMIT, LIMIT)
 
     ax.set_axis_off() # hide axes
     ax.set_aspect('equal') # to have symmetric axes
-
+    
 
     print("compiling animation ...")
     # set number of frames
