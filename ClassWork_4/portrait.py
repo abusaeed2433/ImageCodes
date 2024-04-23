@@ -9,44 +9,34 @@ sys.path.append('.\ClassWork_2')
 from animator import start_animation
 from canny import perform_canny
 
-def spread(image, sp_x, sp_y):
+SPREAD_VAL = 40
+
+def spread(image, sp_x, sp_y, to_replace, replace_with):
     h, w = image.shape
     
     parent_map = {}
     length = 0
     last = None
-    
+
     stack = [(sp_x, sp_y, 0)]
     parent_map[(sp_x, sp_y)] = None
     
     while stack:
         x, y, it = stack.pop()
-
-        # skip if not white
-        if image[x, y] != 255:
+        if image[x, y] != to_replace:
             continue
 
-        image[x, y] = 120
-
+        image[x, y] = replace_with
+        
         it += 1
-
         if it > length:
             length = it
             last = (x, y)
 
-
-        temp = [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
-        indices = []
-        
-        for pt in temp:
-            pt2 = (pt[0]*2, pt[1]*2)
-            
-            indices.append(pt)
-            # indices.append(pt2)
-
+        indices = [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
         for dx, dy in indices:
             nx, ny = x + dx, y + dy
-            if 0 <= nx < h and 0 <= ny < w and image[nx, ny] == 255:
+            if 0 <= nx < h and 0 <= ny < w and image[nx, ny] == to_replace:
                 if (nx, ny) not in parent_map: # Check if not already visited
                     parent_map[(nx, ny)] = (x, y)
                     stack.append((nx, ny, it))
@@ -56,7 +46,6 @@ def spread(image, sp_x, sp_y):
     while last is not None:
         points.append(last)
         last = parent_map[last]
-
     points.reverse()
 
     return points
@@ -71,66 +60,74 @@ def get_contours(image):
 
     contours = []
     
-    to_it = (0,0)
-    it = 0
-        
-    while to_it != None:
-        
-        stack = [to_it]
+    it = 1
+    visited = {}
 
-        to_it = None
-        it += 1
+    def find_nearest_white_pixel(sx,sy):
+        nonlocal visited, it
+        to_it = (sx, sy)
 
-        while stack:
-            x, y = stack.pop()
-            
-            indices = [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+        while to_it != None:
+            queue = deque()
+            queue.append(to_it)
 
-            for dx, dy in indices:
-                nx, ny = x + dx, y + dy
-                if nx < 0 or nx >= h or ny < 0 or ny >= w or image[nx, ny] == 120: # 120 = visited already
+            to_it = None
+            count = 0
+            while queue:
+                x, y = queue.popleft()
+                if visited.get((x,y)) == True:
                     continue
+                count += 1
+                
+                image[x, y] = SPREAD_VAL
 
-                if image[nx, ny] == 255:
-                    to_it = (nx, ny)
-                    stack.clear()
-                    break
-                else:
-                    image[nx, ny] = 120
-                    stack.append( (nx,ny) )
+                indices = [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+                for dx, dy in indices:
+                    nx, ny = x + dx, y + dy
+                    if nx < 0 or nx >= h or ny < 0 or ny >= w or image[nx, ny] == SPREAD_VAL: # SPREAD_VAL = visited already
+                        continue
 
-        print(f"Going to iterate: {to_it}")
-        if to_it != None:
-            points = spread(image, to_it[0], to_it[1])
-            if( len(points) > 50):
+                    if image[nx, ny] == 255:
+                        to_it = (nx, ny)
+                        queue.clear()
+                        break
+                    if visited.get(to_it) == None:
+                        queue.append( (nx,ny) )
+                visited[(x,y)] = True
+
+            if to_it == None:
+                break
+            
+            print(f"Spreading no: {it}")
+            it += 1
+
+            points = spread(image, to_it[0], to_it[1], to_replace = 255, replace_with = 2*SPREAD_VAL)
+            last_pt = points[ len(points)-1 ]
+            
+            points = spread(image, last_pt[0], last_pt[1], to_replace = 2*SPREAD_VAL, replace_with = SPREAD_VAL)
+            if( len(points) > 20):
                 contours.append( points )
 
+            # show_image("Spread result", image=image)
             to_it = points[ len(points) - 1 ]
-        if it == 1:
-            break
-
-    print(f"Total points iterated: {it}")
     
-    show_image("After contour", image, wait=False)
+    for x in range(h):
+        for y in range(w):
+            if visited.get((x,y)) == None:
+                find_nearest_white_pixel(x,y)
 
+    show_image("After contours", image=image)
     return contours
 
 def get_edge_points(image):
     contours = get_contours(image)
-    contours = sorted(contours, key=len)
-    contours.reverse()
-    
-    print(f"Total contours found: {len(contours)}")
 
+    print(f"Total contours found: {len(contours)}")
     W_F = H_F = 2
 
     points = []
-    for i in range( min(3, len(contours) ) ):
+    for i in range( len(contours) ):
         cnt = contours[i]
-        # if len(points) >= len(cnt):
-        #     continue
-        # points.clear()
-
         for pt in cnt:
             points.append( (pt[0]/W_F, pt[1]/H_F) )
     return points
@@ -144,30 +141,18 @@ def show_image(name, image, wait=True):
 def start(image_path):
     image = cv2.imread(image_path,0)
 
-    # edge = perform_canny(image=image, show=False)
+    edge = perform_canny(image=image, show=False)
 
-    # show_image("Canny result", image=edge)
+    show_image("Canny result", image=edge)
+    
+    output_file = "businessman_edge.png"
+    cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
 
-    # kernel = np.ones((1, 2), np.uint8)
-    # image = cv2.dilate(image, kernel, iterations=1)
-    
-    # kernel = np.ones((3,3),np.uint8)
-    # image = cv2.erode(image, kernel, iterations=1)
-    
-    # show_image("Eroded",image)
-    
-    # image = cv2.bitwise_not(image)
-    
-    # show_image("Inverted erosion", image)
-    
-    # cv2.imwrite("ClassWork_4\\images\\dog_edge_final.png",edge)
-
-    edge = cv2.imread("ClassWork_4\images\\dog_edge_final.png", cv2.IMREAD_GRAYSCALE)
+    edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
 
     edge_points = get_edge_points(edge)
-    print(f"No of points for the maximum edge is: {len(edge_points)}")    
+    if edge_points:
+        start_animation(edge_points)
 
-    start_animation(edge_points)
-
-image_path = "ClassWork_4\\images\\dog.jpg"
+image_path = "ClassWork_4\\images\\businessman.png"
 start(image_path)
