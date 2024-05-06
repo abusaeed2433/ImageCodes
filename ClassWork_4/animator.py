@@ -149,7 +149,7 @@ def make_frame(i, time, coeffs):
     drawing.set_data(draw_x, draw_y)
 
     # draw the real curve
-    orig_drawing.set_data(x_list, y_list)
+    # orig_drawing.set_data(x_list, y_list)
 
 
 coordinates = [ (1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10),
