@@ -5,53 +5,64 @@ from math import pi
 from scipy.integrate import quad_vec
 import matplotlib.animation as animation
 
-value_n = 400 # no of cycles = (2*value_n + 1)
+value_n = 10 # no of cycles = (2*value_n + 1)
 circles = []
 circle_lines = []
 draw_x, draw_y = [], []
 drawing = []
+orig_drawing = []
 x_list, y_list = [],[]
 
 def start_animation(coordinates):
-    global value_n, circles, circle_lines, drawing, x_list, y_list
-
-    y_list, x_list = zip(*coordinates)
+    global value_n, circles, circle_lines, drawing, orig_drawing, x_list, y_list
+    
+    x_list, y_list = zip(*coordinates)
 
     x_list = x_list - np.mean(x_list)
     y_list = y_list - np.mean(y_list)
 
-    x_list, y_list = x_list, -y_list
-
     # visualize the contour
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(x_list, y_list)    
-    plt.show()
+    ax.plot(x_list, y_list)
+
+    # # later we will need these data to fix the size of figure
+    xlim_data = plt.xlim()
+    ylim_data = plt.ylim()
+
+    # plt.show()
 
     # time data from 0 to 2*PI as x,y is the function of time.
-    t_list = np.linspace(0, 2*pi, len(x_list))
+    t_list = np.linspace(0, 2*pi, len(x_list)) # now we can relate f(t) -> x,y
+
     print(t_list)
 
+    
+    
     # function to generate x+iy at given time t
     def f(t, t_list, x_list, y_list):
         return np.interp(t, t_list, x_list + 1j*y_list)
 
-    print("Generating coefficients ...")
+    print("generating coefficients ...")
     coeff = []
     for n in range(-value_n, value_n+1):
         coef = (1 / 2*pi) * quad_vec(
                 lambda t: f(t, t_list, x_list, y_list)*np.exp(-n*t*1j), 
                 0, 2*pi, # integral limit
-                limit = 100, full_output=1
             )[0] # first element is the integral value
         coeff.append(coef)
 
     coeff = np.array(coeff)
     print(coeff)
 
+
+    # this is to store the points of last circle of epicycle which draws the required figure
+    
+
     # make figure for animation
     fig, ax = plt.subplots()
 
+    # different plots to make epicycle
     # there are -value_n to value_n numbers of circles
     circles = [ax.plot([], [], 'r-')[0] for i in range(-value_n, value_n+1)]
 
@@ -61,19 +72,21 @@ def start_animation(coordinates):
     # drawing is plot of final drawing
     drawing, = ax.plot([], [], 'k-', linewidth=2)
 
-    # to fix the size of figure so that the figure does not get cropped/trimmed
-    LIMIT = 1500
+    # original drawing
+    orig_drawing, = ax.plot([], [], 'g-', linewidth=0.5)
 
-    ax.set_xlim(-LIMIT, LIMIT)
-    ax.set_ylim(-LIMIT, LIMIT)
+    # to fix the size of figure so that the figure does not get cropped/trimmed
+    LIMIT = 100
+    ax.set_xlim(xlim_data[0]-LIMIT, xlim_data[1]+LIMIT)
+    ax.set_ylim(ylim_data[0]-LIMIT, ylim_data[1]+LIMIT)
 
     ax.set_axis_off() # hide axes
     ax.set_aspect('equal') # to have symmetric axes
-    
+
 
     print("compiling animation ...")
     # set number of frames
-    no_of_frames = 100
+    no_of_frames = 300
     
     time = np.linspace(0, 2*pi, num=no_of_frames)
     anim = animation.FuncAnimation(fig, make_frame, frames=no_of_frames, fargs=(time, coeff), interval=5)
@@ -94,7 +107,7 @@ def sort_coeff(coeffs):
 # make frame at time t
 # t goes from 0 to 2*PI for complete cycle
 def make_frame(i, time, coeffs):
-    global value_n, circles, circle_lines, draw_x, draw_y, drawing, x_list, y_list
+    global value_n, circles, circle_lines, draw_x, draw_y, drawing, orig_drawing, x_list, y_list
     
     t = time[i]
 
@@ -138,6 +151,8 @@ def make_frame(i, time, coeffs):
     # draw the curve from last point
     drawing.set_data(draw_x, draw_y)
 
+    # draw the real curve
+    orig_drawing.set_data(x_list, y_list)
 
 
 coordinates = [ (1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10),

@@ -5,7 +5,7 @@ from math import pi
 from scipy.integrate import quad_vec
 import matplotlib.animation as animation
 
-value_n = 400 # no of cycles = (2*value_n + 1)
+value_n = 200 # no of cycles = (2*value_n + 1)
 circles = []
 circle_lines = []
 draw_x, draw_y = [], []

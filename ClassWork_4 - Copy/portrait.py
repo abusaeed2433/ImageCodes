@@ -33,18 +33,7 @@ def spread(image, sp_x, sp_y, to_replace, replace_with):
             length = it
             last = (x, y)
 
-        tmp = [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
-        indices = []
-        
-        for pt in tmp:
-            indices.append(pt)
-        
-        # for pt in tmp:
-        #     pt2 = (pt[0]*2, pt[1]*2)
-        #     pt3 = (pt[0]*3, pt[1]*3)
-        #     indices.append(pt2)
-        #     indices.append(pt3)
-        
+        indices = [(-1, -1), (0, -1), (1, -1), (-1, 0), (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
         for dx, dy in indices:
             nx, ny = x + dx, y + dy
             if 0 <= nx < h and 0 <= ny < w and image[nx, ny] == to_replace:
@@ -153,18 +142,19 @@ def start(image_path):
     image = cv2.imread(image_path,0)
 
     edge = perform_canny(image=image, show=False)
-        
-    output_file = "businessman_edge.png"
-    cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
     
-    # edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
+    output_file = "shape_edge.jpg"
+    cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
+
+    edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
     
     show_image("Input image", image=image)
+
     show_image("Canny result", image=edge)
 
     edge_points = get_edge_points(edge)
     if edge_points:
         start_animation(edge_points)
 
-image_path = "ClassWork_4\\images\\businessman.png"
+image_path = "ClassWork_4\\images\\shape.jpg"
 start(image_path)
