@@ -10,11 +10,10 @@ circles = []
 circle_lines = []
 draw_x, draw_y = [], []
 drawing = []
-orig_drawing = []
 x_list, y_list = [],[]
 
 def start_animation(coordinates):
-    global value_n, circles, circle_lines, drawing, orig_drawing, x_list, y_list
+    global value_n, circles, circle_lines, drawing, x_list, y_list
 
     y_list, x_list = zip(*coordinates)
 
@@ -67,9 +66,6 @@ def start_animation(coordinates):
     # drawing is plot of final drawing
     drawing, = ax.plot([], [], 'k-', linewidth=2)
 
-    # original drawing
-    orig_drawing, = ax.plot([], [], 'g-', linewidth=0.5)
-
     # to fix the size of figure so that the figure does not get cropped/trimmed
     LIMIT = 1500
     # ax.set_xlim(xlim_data[0]-LIMIT, xlim_data[1]+LIMIT)
@@ -104,7 +100,7 @@ def sort_coeff(coeffs):
 # make frame at time t
 # t goes from 0 to 2*PI for complete cycle
 def make_frame(i, time, coeffs):
-    global value_n, circles, circle_lines, draw_x, draw_y, drawing, orig_drawing, x_list, y_list
+    global value_n, circles, circle_lines, draw_x, draw_y, drawing, x_list, y_list
     
     t = time[i]
 
@@ -148,8 +144,6 @@ def make_frame(i, time, coeffs):
     # draw the curve from last point
     drawing.set_data(draw_x, draw_y)
 
-    # draw the real curve
-    # orig_drawing.set_data(x_list, y_list)
 
 
 coordinates = [ (1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10),

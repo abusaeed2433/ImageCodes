@@ -148,9 +148,9 @@ def start(image_path):
     show_image("Canny result", image=edge)
     
     output_file = "businessman_edge.png"
-    # cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
+    cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
 
-    edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
+    # edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
 
     edge_points = get_edge_points(edge)
     if edge_points:
