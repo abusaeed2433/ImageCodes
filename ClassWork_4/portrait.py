@@ -153,9 +153,9 @@ def start(image_path):
     image = cv2.imread(image_path,0)
 
     edge = perform_canny(image=image, show=False)
-        
-    output_file = "businessman_edge.png"
-    cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
+
+    # output_file = "businessman_edge.png"
+    # cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
     
     # edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
     
