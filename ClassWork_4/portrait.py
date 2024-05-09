@@ -166,5 +166,5 @@ def start(image_path):
     if edge_points:
         start_animation(edge_points)
 
-image_path = "ClassWork_4\\images\\businessman.png"
+image_path = "ClassWork_4\\images\\shape.jpg"
 start(image_path)
