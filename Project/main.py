@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import colorsys
 
 import sys
 sys.path.append("ClassWork_1")
@@ -20,7 +21,7 @@ def segment(image):
     image = image.copy()
     
     # show_image(image=image, name="atek")
-    
+
     vert = []
     not_in_prev = True
 
@@ -91,47 +92,86 @@ def draw_point_at(image, x,y, color = 100):
 
 RECT_INTENSITY = 80
 
-def draw_rect_at(image, top_left, top_right, bottom_right, bottom_left):
+def draw_rect_at(image, top_left, top_right, bottom_right, bottom_left, INTEN):
     # top_left to top_right 
     
     for y in range(top_left[1], top_right[1]):
-        image[ top_left[0], y ] = RECT_INTENSITY # -5
+        image[ top_left[0], y ] = INTEN # -5
 
     # top_right to bottom_right
     for x in range(top_left[0], bottom_left[0]):
-        image[ x, top_left[1]] = RECT_INTENSITY # +5
+        image[ x, top_left[1]] = INTEN # +5
 
     # bottom_right to bottom_left
     for x in range(top_right[0], bottom_right[0]):
-        image[ x, top_right[1]] = RECT_INTENSITY # x+5
+        image[ x, top_right[1]] = INTEN # x+5
     
     # bottom_left to top_left
     for y in range(bottom_left[1], bottom_right[1]):
-        image[ bottom_left[0], y ] = RECT_INTENSITY #y-5
+        image[ bottom_left[0], y ] = INTEN #y-5
 
 # points order is: lt, lb, rb, rt
 def annotate_rect_points(image, my_segments):
     image = image.copy()
     
     for seg in my_segments:
-        draw_rect_at(image, seg.rect[0], seg.rect[3], seg.rect[2], seg.rect[1])
+        draw_rect_at(image, seg.rect[0], seg.rect[3], seg.rect[2], seg.rect[1],80)
     return image
 
-def extract_and_detect_segments(image, my_segments):
+def index_to_color(index):
+    # Generate a unique hue by using the index. This keeps colors visually distinct.
+    hue = (index * 0.618033988749895) % 1  # The golden ratio modulo 1 for good distribution
+    # Convert hue, saturation, and value to RGB. Saturation and value are both set to 100%.
+    rgb = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+    # Convert from float (0 to 1 range) to an integer (0 to 255 range)
+    return tuple(int(x * 255) for x in rgb)
+
+def draw_text(image, text, top_left, bottom_right):
+    text = str(text)
+    
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.5
+    font_color = (0, 0, 0)
+    font_thickness = 1
+
+    (text_width, text_height), _ = cv2.getTextSize(text, font, font_scale, font_thickness)
+
+    text_x = top_left[1] + (bottom_right[1] - top_left[1] - text_width) // 2
+    text_y = top_left[0] + (bottom_right[0] - top_left[0] + text_height) // 2
+
+    cv2.putText(image, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
+
+
+def extract_and_detect_segments(gray_image, my_segments):
     global gui
     
+    color_image = np.stack((gray_image,)*3, axis=-1)
+    # empty_image = color_image.copy()
+
+    height, width, _ = color_image.shape
+    empty_image = np.ones((height, width, 3), dtype=np.uint8) * 255
+    
+    index = 0
     for seg in my_segments:
         rect = seg.rect
-        segment = get_image_at_segment(image, seg)
+        segment = get_image_at_segment(gray_image, seg)
         
         matched_dig, matched_seg, percent = perform_matching(segment=segment)
+        # matched_seg = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\actual\\0.png')
         percent = "{:.3f}".format(percent)
         
-        annotated_img = image.copy()
-        draw_rect_at(annotated_img, seg.rect[0], seg.rect[3], seg.rect[2], seg.rect[1])
+        color = index_to_color(index)
+        index += 1
+
+        draw_rect_at(color_image, seg.rect[0], seg.rect[3], seg.rect[2], seg.rect[1], color) # BGR
+        draw_rect_at(empty_image, seg.rect[0], seg.rect[3], seg.rect[2], seg.rect[1], color) # BGR
+        
+        draw_text(empty_image, matched_dig, seg.rect[0], seg.rect[2])
+        
+        gui.set_final_image(empty_image)
         
         gui.add_frame(
-            left_image=annotated_img, left_text='Matching with',
+            left_image=color_image, left_text='Matching with',
             right_image=matched_seg, right_text='Matched with',
             bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}"
         )

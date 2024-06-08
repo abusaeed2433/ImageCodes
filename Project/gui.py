@@ -24,9 +24,10 @@ class Status(Enum):
     RUNNING_SECOND = 6
 
 class MyFrame:
-    def __init__(self, left_image=None, right_image=None, left_text = None, right_text = None, bottom_text = None):
+    def __init__(self, left_image=None, right_image=None, left_text = None, right_text = None, bottom_text = None, keep_prev = False):
         self.left_image = left_image
         self.right_image = right_image
+        self.keep_prev = keep_prev
         
         if self.left_image is not None:
             self.left_image = left_image.copy()
@@ -43,6 +44,7 @@ class ImageGUI:
         self.root = root
         self.frames = []
         self.cur_index = -1
+        self.pressed = 0
 
         self.cur_state = Status.NOT_STARTED
         self.root.title("Digit Recognizer")
@@ -74,8 +76,8 @@ class ImageGUI:
         
         self.callback.on_ready(self)
 
-    def add_frame(self, left_image=None, right_image=None, left_text = None, right_text = None, bottom_text = None):
-        frame = MyFrame(left_image=left_image, right_image=right_image, left_text=left_text, right_text=right_text, bottom_text=bottom_text)
+    def add_frame(self, left_image=None, right_image=None, left_text = None, right_text = None, bottom_text = None, keep_prev = False):
+        frame = MyFrame(left_image=left_image, right_image=right_image, left_text=left_text, right_text=right_text, bottom_text=bottom_text, keep_prev=keep_prev)
         self.frames.append(frame)
     
     def on_prev_frame_show(self):
@@ -94,7 +96,8 @@ class ImageGUI:
             right_image = frame.right_image,
             left_text = frame.left_text,
             right_text = frame.right_text,
-            bottom_text = frame.bottom_text
+            bottom_text = frame.bottom_text,
+            keep_prev = frame.keep_prev
         )
         
         
@@ -112,33 +115,39 @@ class ImageGUI:
             right_image = frame.right_image,
             left_text = frame.left_text,
             right_text = frame.right_text,
-            bottom_text = frame.bottom_text
+            bottom_text = frame.bottom_text,
+            keep_prev = frame.keep_prev
         )
         return True
     
-    def update_frame(self, left_image = None, right_image = None, left_text = None, right_text = None, bottom_text = None):
+    def update_frame(self, left_image = None, right_image = None, left_text = None, right_text = None, bottom_text = None, keep_prev = False):
         
-        self.update_image(left_image, self.left_image_label, right_side=False)
-        self.update_image(right_image, self.right_image_label, right_side=True)
+        self.update_image(left_image, self.left_image_label, right_side=False, keep_prev=keep_prev)
+        self.update_image(right_image, self.right_image_label, right_side=True, keep_prev=keep_prev)
         
         if left_text is None:
-            left_text = ''
-
-        self.text_display_left.config(text=left_text)
+            if not keep_prev:
+                self.text_display_left.config(text='')
+        else:
+            self.text_display_left.config(text=left_text)
         
         if right_text is None :
-            right_text = ''
+            if not keep_prev:
+                self.text_display_right.config(text=right_text)
+        else:
+            self.text_display_right.config(text=right_text)
 
-        self.text_display_right.config(text=right_text)
-            
         if bottom_text is None :
-            bottom_text = ''
-
-        self.text_display_bottom.config(text=bottom_text)
-    def update_image(self, image, label, right_side):
+            if not keep_prev:
+                self.text_display_bottom.config(text=bottom_text)
+        else:
+            self.text_display_bottom.config(text=bottom_text)
+        
+    def update_image(self, image, label, right_side, keep_prev):
         if image is None:
-            label.configure(image='')
-            label.image = None
+            if not keep_prev:
+                label.configure(image='')
+                label.image = None
         else:
             if not right_side:
                 image = cv2.resize(image, (500, 300))
@@ -227,14 +236,17 @@ class ImageGUI:
             return
 
         if self.cur_state == Status.RUNNING_SECOND:
-            if not self.show_next_frame():#Failed to show next frame - means finished
+            if not self.show_next_frame(): # Failed to show next frame - means finished
                 self.pressed += 1
                 if(self.pressed == 1):
+                    self.add_frame(right_image = self.final_image, keep_prev=True, bottom_text='Final result')
+                    self.show_next_frame()
+                elif self.pressed == 2:
                     self.show_message('Press again to restart')
                 else:
                     self.add_frame(left_text='Left side', right_text='Right side', bottom_text='Message will be shown here')
                     self.show_next_frame()
-                    
+
                     # Reset
                     self.frames.clear()
                     self.cur_index = -1
@@ -260,6 +272,8 @@ class ImageGUI:
 
         self.show_message('Processing....')
     
+    def set_final_image(self, img):
+        self.final_image = img
     def get_names_and_mapping(self, image_paths):
         name_path_mapping = {}
         names = []

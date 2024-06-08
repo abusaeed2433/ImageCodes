@@ -36,11 +36,13 @@ def perform_matching(segment):
         templates = read_templates()
         h = TEMPLATE_SIZE[1]
         w = TEMPLATE_SIZE[0]
+        # print('Template not resized')
     else:
         # if h >= TEMPLATE_SIZE[1] or w >= TEMPLATE_SIZE[0]:
         h = min( TEMPLATE_SIZE[1], h)
         w = min( TEMPLATE_SIZE[0], w )
         
+        # print('Template resized')
         segment = cv2.resize(segment,(w,h),segment)
         templates = read_templates(h=h, w=w)
 
