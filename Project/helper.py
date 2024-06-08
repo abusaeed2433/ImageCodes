@@ -47,6 +47,8 @@ def perform_matching(segment):
     # print((h,w))
     # print(segment.shape)
     best_template = (-1,0)
+    best_segment = None
+    
     for ti in range( len(templates) ):
         template = templates[ti]
         # print("Shapes are")
@@ -66,7 +68,8 @@ def perform_matching(segment):
         
         if matched > best_template[1]:
             best_template = (ti, matched)
+            best_segment = template
     
     percent = ( 100 * best_template[1] ) / (h * w)
-    print("percentage "+str(percent))
-    return best_template[0]
+    # print("percentage "+str(percent))
+    return best_template[0], best_segment, percent

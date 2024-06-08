@@ -118,17 +118,29 @@ def annotate_rect_points(image, my_segments):
     return image
 
 def extract_and_detect_segments(image, my_segments):
-    return
+    global gui
+    
     for seg in my_segments:
         rect = seg.rect
         segment = get_image_at_segment(image, seg)
-        matched_with = perform_matching(segment=segment)
         
-        print("matched_with "+str(matched_with))
-        show_image(segment)
+        matched_dig, matched_seg, percent = perform_matching(segment=segment)
+        percent = "{:.3f}".format(percent)
+        
+        annotated_img = image.copy()
+        draw_rect_at(annotated_img, seg.rect[0], seg.rect[3], seg.rect[2], seg.rect[1])
+        
+        gui.add_frame(
+            left_image=annotated_img, left_text='Matching with',
+            right_image=matched_seg, right_text='Matched with',
+            bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}"
+        )
+        # show_image(segment)
 
+thress_image = None
+my_segments = None
 def start_detection(image):
-    global gui
+    global gui, thress_image, my_segments
     
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Gray scale conversion
     # show_image(image=image, name="Gray scale converted")
@@ -151,14 +163,14 @@ def start_detection(image):
     gui.add_frame(left_image=cropped, left_text='Segmented image', bottom_text='Each isolated gray area is one segment')
     
     annotated = annotate_rect_points(cropped,my_segments)
-    gui.add_frame(left_image=annotated, left_text='Annotated image')
-    
-    # extract_and_detect_segments(thress_image, my_segments)
+    gui.add_frame(left_image=annotated, left_text='Annotated image') # Don't change this text idiot, used in gui part
 
-def wait():
+def start_extract_and_detect_part():
+    global thress_image, my_segments
+    extract_and_detect_segments(thress_image, my_segments)
+    
     global gui
-    while not gui.wait_until():
-        a = 10
+    gui.show_message('Extracted. Continue to see')
 
 def on_start_req(path):
     global gui
@@ -190,7 +202,7 @@ def start():
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\odd_even.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png'
         ],
-        callback=Callbacks(start=on_start_req, on_ready= on_gui_ready)
+        callback=Callbacks(start=on_start_req, on_ready= on_gui_ready, on_detect_start = start_extract_and_detect_part)
     )
 
 start()

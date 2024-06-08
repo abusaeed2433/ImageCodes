@@ -10,15 +10,17 @@ import os
 from enum import Enum
 
 class Callbacks:
-    def __init__(self, start, on_ready):
+    def __init__(self, start, on_ready, on_detect_start):
         self.start = start
         self.on_ready = on_ready
+        self.on_detect_start = on_detect_start
 
 class Status(Enum):
     NOT_STARTED = 1
     INPUT_IMAGE_SELECTED = 2
     RUNNING = 3
     ENDED = 4
+    DONE_TILL_DETECTION = 5
 
 class MyFrame:
     def __init__(self, left_image=None, right_image=None, left_text = None, right_text = None, bottom_text = None):
@@ -97,7 +99,7 @@ class ImageGUI:
     def show_next_frame(self):
         if self.cur_index + 1 >= len(self.frames):
             self.show_message('Please wait. Next frame is not ready')
-            return
+            return False
 
         self.cur_index += 1
         
@@ -110,11 +112,12 @@ class ImageGUI:
             right_text = frame.right_text,
             bottom_text = frame.bottom_text
         )
+        return True
     
     def update_frame(self, left_image = None, right_image = None, left_text = None, right_text = None, bottom_text = None):
         
-        self.update_image(left_image, self.left_image_label)    
-        self.update_image(right_image, self.right_image_label)
+        self.update_image(left_image, self.left_image_label, right_side=False)
+        self.update_image(right_image, self.right_image_label, right_side=True)
         
         if left_text is None:
             left_text = ''
@@ -130,12 +133,13 @@ class ImageGUI:
             bottom_text = ''
 
         self.text_display_bottom.config(text=bottom_text)
-    def update_image(self, image, label):
+    def update_image(self, image, label, right_side):
         if image is None:
             label.configure(image='')
             label.image = None
         else:
-            image = cv2.resize(image, (500, 300))
+            if not right_side:
+                image = cv2.resize(image, (500, 300))
             
             img_pil = Image.fromarray(image)
             img_tk = ImageTk.PhotoImage(image=img_pil)
@@ -212,7 +216,11 @@ class ImageGUI:
     
     def on_click(self):
         if (self.cur_state == Status.RUNNING):
-            self.show_next_frame()
+            if not self.show_next_frame(): # failed to show frame
+                current_text = self.text_display_left.cget('text')
+                if(current_text == 'Annotated image'): # start annotation part
+                    self.show_message('Please wait. Starting next part....')
+                    self.callback.on_detect_start()
             return
 
         if self.cur_state == Status.NOT_STARTED:
