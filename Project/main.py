@@ -16,7 +16,7 @@ from segmenter import segment_new, get_image_at_segment
 from gui import create_gui, Callbacks, ImageGUI, Status
 from bg_remover import remove_background
 from utility import crop_image
-
+from aligner import get_aligned_digit
 
 def segment(image):
     thress = image.copy()
@@ -148,7 +148,6 @@ def extract_and_detect_segments(gray_image, my_segments):
     global gui
     
     color_image = np.stack((gray_image,)*3, axis=-1)
-    # empty_image = color_image.copy()
 
     height, width, _ = color_image.shape
     empty_image = np.ones((height, width, 3), dtype=np.uint8) * 255
@@ -157,6 +156,8 @@ def extract_and_detect_segments(gray_image, my_segments):
     for seg in my_segments:
         rect = seg.rect
         segment = get_image_at_segment(gray_image, seg)
+        
+        aligned_segment = get_aligned_digit(segment.copy())
         
         matched_dig, matched_seg, percent = perform_matching(segment=segment)
         # matched_seg = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\actual\\0.png')
@@ -171,6 +172,8 @@ def extract_and_detect_segments(gray_image, my_segments):
         draw_text(empty_image, matched_dig, seg.rect[0], seg.rect[2])
         
         gui.set_final_image(empty_image)
+        
+        # angle = calc_rotation_angle(re)
         
         gui.add_frame(
             left_image=color_image, left_text='Matching with',
@@ -191,7 +194,7 @@ def start_detection(image):
     
     # Remove background
     image_without_back = remove_background(image)
-    gui.add_frame(left_image=image_without_back, left_text='Background removed')
+    gui.add_frame(left_image=image_without_back, left_text='Background removed & Highlighted')
     
     # Crop image
     # image_cropped = crop_image(image_without_back)
@@ -204,8 +207,7 @@ def start_detection(image):
     
     thress_image = normalize(thress_image)
     gui.add_frame(left_image=thress_image, left_text='Threesholded', bottom_text=f"Threeshold value is: {threes}")
-    
-        
+
     cropped, my_segments = segment_new(thress_image)
     gui.add_frame(left_image=cropped, left_text='Segmented image', bottom_text='Each isolated gray area is one segment')
     
@@ -246,6 +248,7 @@ def start():
         text_bottom='Message will shown here',
         image_paths=[
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input_rotated.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\odd_even.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png'
         ],
@@ -257,7 +260,7 @@ start()
 # Should work with solid background or having some background -done
 # Try to align rotated version and then compare
 # Try to use separate joing digit if possible - optional
-# Show everything in GUI not in console - maybe color the current digit and show on right
+# Show everything in GUI not in console - maybe color the current digit and show on right -done
 
 
 # ------------------------------------ ---------------------- -----------------------------------

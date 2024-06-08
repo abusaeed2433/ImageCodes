@@ -1,53 +1,106 @@
 import numpy as np
 import cv2
+import math
+from math import inf
 
-def calculate_centroid(edge_points):
-    return np.mean(edge_points, axis=0)
+BLACK = 0
 
-def calculate_covariance(edge_points, centroid):
-    shifted_points = edge_points - centroid
-    return np.dot(shifted_points.T, shifted_points) / shifted_points.shape[0]
-
-def find_major_axis(covariance_matrix):
-    eigenvalues, eigenvectors = np.linalg.eig(covariance_matrix)
-    major_axis = eigenvectors[:, np.argmax(eigenvalues)]
-    return major_axis
-
-def calculate_rotation_angle(major_axis):
-    return np.arctan2(major_axis[1], major_axis[0])
-
-def rotate_image(image, angle, centroid):
-    cos_angle, sin_angle = np.cos(angle), np.sin(angle)
-    height, width = image.shape
-    rotated_image = np.zeros_like(image)
+def extract_points(segment):
+    points = []
     
-    for y in range(height):
-        for x in range(width):
-            x_shifted, y_shifted = x - centroid[0], y - centroid[1]
-            x_rotated = cos_angle * x_shifted - sin_angle * y_shifted + centroid[0]
-            y_rotated = sin_angle * x_shifted + cos_angle * y_shifted + centroid[1]
-            if 0 <= x_rotated < width and 0 <= y_rotated < height:
-                rotated_image[int(y_rotated), int(x_rotated)] = image[y, x]
+    h,w = segment.shape
     
-    return rotated_image
+    for x in range(h):
+        for y in range(w):
+            if(segment[x,y] == BLACK):
+                points.append( (x,y) )
+    return points
 
-# Example edge points
-edge_points = np.array([[x, y] for x in range(100) for y in range(100) if (x-50)**2 + (y-50)**2 < 400])
+def rotate_points(points, angle):
+    angle_rad = math.radians(angle)
+    ox, oy = (0,0)
+    rotated_points = []
+    cos_theta, sin_theta = math.cos(angle_rad), math.sin(angle_rad)
 
-# Calculate centroid and covariance
-centroid = calculate_centroid(edge_points)
-covariance_matrix = calculate_covariance(edge_points, centroid)
+    for x, y in points:
+        tx, ty = x - ox, y - oy
+        
+        # Apply rotation
+        rotated_x = tx * cos_theta - ty * sin_theta
+        rotated_y = tx * sin_theta + ty * cos_theta
+        
+        # Reverse translation
+        final_x = rotated_x + ox
+        final_y = rotated_y + oy
+        
+        rotated_points.append((final_x, final_y))
+    
+    return rotated_points
 
-# Find the major axis
-major_axis = find_major_axis(covariance_matrix)
+# Returns the horizontal and vertical rectangle area w,h needed to cover all the points
+def get_area_param(points):
+    min_x = inf
+    min_y = inf
+    max_x = -inf
+    max_y = -inf
 
-# Calculate the rotation angle needed
-rotation_angle = calculate_rotation_angle(major_axis)
+    for pt in points:
+        min_x = min(min_x, pt[0])
+        min_y = min(min_y, pt[1])
+        
+        max_x = max(max_x, pt[0])
+        max_y = max(max_y, pt[1])
 
-# Assuming you have a grayscale image array `image`
-# Rotate the image
-corrected_image = rotate_image(image, -rotation_angle, centroid)
+    w = max_y - min_y
+    h = max_x - min_x
+    
+    return w, h, min_x, min_y # Area
 
-cv2.imshow('Input', corrected_image)
+def get_aligned_digit(segment): #segment is copied. Do whatever you want to
+    
+    points = extract_points(segment)
+    best_points = points
+    
+    w,h, lx, ly = get_area_param(points)
+    
+    min_area = w * h
+    best_angle = 0
+    
+    print(min_area)
+    
+    for angle in range(0,180, 5):
+        points = rotate_points(points, 5)
+        nw, nh, nlx, nly = get_area_param(points)
+        
+        area = nw * nh
+        
+        # print(f'Best: {min_area}, Cur:{area}')
+        if min_area > area:
+            min_area = area
+            best_angle = angle
+            best_points = points
+            w = nw
+            h = nh
+            lx = nlx
+            ly = nly
+    
+    image = np.zeros((h+1,w+1), dtype=np.uint8)
+    
+    for pt in best_points:
+        x = pt[0] - lx
+        y = pt[1] - ly
+        
+        image[x][y] = BLACK
+    
+    print(best_angle)
+    return image
+    
+image = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\actual\\2.png',0)
+cv2.imshow('Input image', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+aligned = get_aligned_digit(image)
+cv2.imshow('Rotated image', aligned)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

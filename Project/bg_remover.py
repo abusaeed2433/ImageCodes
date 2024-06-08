@@ -4,6 +4,7 @@ from collections import defaultdict
 
 WHITE = 255
 BLACK = 0
+GRAY = 50
 
 def remove_background(image):
     count_map = defaultdict(int)
@@ -29,6 +30,8 @@ def remove_background(image):
             val = image[x,y]
             if val == inten:
                 new_image[x,y] = WHITE
-            elif val == WHITE:
-                new_image[x,y] = BLACK # making white to black to avoid conflict
+            # elif val == 2:
+            #     new_image[x,y] = BLACK # making white to black to avoid conflict
+            else:
+                new_image[x,y] = GRAY
     return new_image

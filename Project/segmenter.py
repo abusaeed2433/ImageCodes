@@ -90,6 +90,7 @@ def segment_new(image):
                 segments.append(segment)
     return image, segments
 
+# returns only the segment excluding other area if any
 def get_image_at_segment(image, seg):
     top_left = seg.rect[0]
     bottom_right = seg.rect[2]
@@ -135,9 +136,9 @@ def get_image_at_segment(image, seg):
         
         area.append((x,y))    
         image[x,y] = 120
-            
+
         indices = ( (-1,-1), (0, -1), (1,-1), (-1,0), (0,0), (1,0), (-1,1), (0,1), (1,1) )
-            
+
         for pt in indices:
             nx = x + pt[0]
             ny = y + pt[1]
