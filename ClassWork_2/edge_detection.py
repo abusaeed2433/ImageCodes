@@ -10,8 +10,8 @@ from kernal_generator import *
 
 def get_kernel(sigma = 0.7):
     kernel,formatted_kernel = generateGaussianKernel(sigmaX=sigma, sigmaY=sigma, MUL=7)
-    print("Gauss")
-    print(formatted_kernel)
+    # print("Gauss")
+    # print(formatted_kernel)
     
     h = len(kernel)
     
@@ -98,7 +98,7 @@ def find_threeshold(image):
     while( abs(newT - oldT) > 0.1 ** 6 ) :
         oldT = newT
         newT = find_next_threeshold(image=image,t=oldT)
-        print(f"Old: {oldT}, New: {newT}")
+        # print(f"Old: {oldT}, New: {newT}")
 
     return newT
 
