@@ -157,12 +157,23 @@ def extract_and_detect_segments(gray_image, my_segments):
         rect = seg.rect
         segment = get_image_at_segment(gray_image, seg)
         
-        aligned_segment = get_aligned_digit(segment.copy())
+        digit_one, digit_two = get_aligned_digit(segment.copy())
         
-        matched_dig, matched_seg, percent = perform_matching(segment=segment)
-        # matched_seg = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\actual\\0.png')
-        percent = "{:.3f}".format(percent)
+        matched_dig_one, matched_seg_one, percent_one = perform_matching(segment=digit_one)
+        matched_dig_two, matched_seg_two, percent_two = perform_matching(segment=digit_two)
         
+        percent_one = "{:.3f}".format(percent_one)
+        percent_two = "{:.3f}".format(percent_two)
+        
+        matched_dig = matched_dig_one
+        matched_seg = matched_seg_one
+        percent = percent_one
+        
+        if percent_one < percent_two:
+            matched_dig = matched_dig_two
+            matched_seg = matched_seg_two
+            percent = percent_two
+
         color = index_to_color(index)
         index += 1
 
@@ -247,9 +258,9 @@ def start():
         text_right='Output side',
         text_bottom='Message will shown here',
         image_paths=[
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input_rotated.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\odd_even.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input_rotated.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png'
         ],
         callback=Callbacks(start=on_start_req, on_ready= on_gui_ready, on_detect_start = start_extract_and_detect_part)
