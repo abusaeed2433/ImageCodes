@@ -1,18 +1,31 @@
 import cv2
 import numpy as np
 
-def get_median(neighborhood):
-    sorted_neighborhood = sorted(neighborhood)
-    median_index = len(sorted_neighborhood) // 2
-    return sorted_neighborhood[median_index]
+def merge_images(image1, image2):
+    height1, width1 = image1.shape
+    
+    height2, width2 = image2.shape
 
-def get_neighborhood(x, y, img, filter_size):
-    neighborhood = []
-    for i in range(-(filter_size // 2), filter_size // 2 + 1):
-        for j in range(-(filter_size // 2), filter_size // 2 + 1):
-            if 0 <= x + i < img.shape[0] and 0 <= y + j < img.shape[1]:
-                neighborhood.append(img[x + i, y + j])
-    return neighborhood
+    max_width = max(width1, width2)
+
+    # Create a new image of the appropriate size
+    merged_image = 255 * np.ones((height1 + height2+3, max_width), dtype=np.uint8)
+
+    # Copy over the first image
+    for i in range(height1):
+        for j in range(width1):
+            merged_image[i][j] = image1[i][j]
+
+    for j in range(width2):
+        merged_image[height1 + 2][j] = 120
+
+    # Copy over the second image
+    for i in range(height2):
+        for j in range(width2):
+            merged_image[height1 + i][j] = image2[i][j]
+
+    return merged_image
+
 
 def crop_image(image):
     height, width = image.shape

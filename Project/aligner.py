@@ -114,13 +114,13 @@ def get_aligned_digit(segment): #segment is copied. Do whatever you want to
     
     rotated_states = []
     
-    for angle in range(0,360, 10):
+    for angle in range(0,360, 2):
         points = rotate_points(temp_points, angle)
         nw, nh, nlx, nly = get_area_param(points)
         
         area = nw * nh
 
-        if min_area >= area:
+        if abs(min_area-area) <= 500:# and nw < w:
             rotated_states.append( RotatedState( nw, nh, points, nlx, nly, area, angle ) )
             
             min_area = area
@@ -131,7 +131,7 @@ def get_aligned_digit(segment): #segment is copied. Do whatever you want to
             lx = nlx
             ly = nly
 
-    rotated_states = sorted(rotated_states, key=lambda state: (state.area, state.width))
+    rotated_states = sorted(rotated_states, key=lambda state: (state.width, state.area))
     
     image_one = None
     image_two = None

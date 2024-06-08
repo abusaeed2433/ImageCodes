@@ -15,7 +15,7 @@ from helper import read_templates, perform_matching, show_image
 from segmenter import segment_new, get_image_at_segment
 from gui import create_gui, Callbacks, ImageGUI, Status
 from bg_remover import remove_background
-from utility import crop_image
+from utility import crop_image, merge_images
 from aligner import get_aligned_digit
 
 def segment(image):
@@ -173,7 +173,9 @@ def extract_and_detect_segments(gray_image, my_segments):
             matched_dig = matched_dig_two
             matched_seg = matched_seg_two
             percent = percent_two
-
+        
+        merged_image = merge_images(digit_one, digit_two)
+        
         color = index_to_color(index)
         index += 1
 
@@ -185,6 +187,12 @@ def extract_and_detect_segments(gray_image, my_segments):
         gui.set_final_image(empty_image)
         
         # angle = calc_rotation_angle(re)
+        
+        gui.add_frame(
+            left_image=color_image, left_text='Matching with', 
+            right_image=merged_image, right_text='Aligned image',
+            bottom_text='Alinged image on right', keep_prev=True 
+        )
         
         gui.add_frame(
             left_image=color_image, left_text='Matching with',
