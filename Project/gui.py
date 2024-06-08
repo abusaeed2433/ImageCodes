@@ -21,6 +21,7 @@ class Status(Enum):
     RUNNING = 3
     ENDED = 4
     DONE_TILL_DETECTION = 5
+    RUNNING_SECOND = 6
 
 class MyFrame:
     def __init__(self, left_image=None, right_image=None, left_text = None, right_text = None, bottom_text = None):
@@ -82,7 +83,8 @@ class ImageGUI:
             self.show_message('No previous frame found')
             return
         
-        self.cur_state = Status.RUNNING
+        if self.cur_state != Status.RUNNING_SECOND:
+            self.cur_state = Status.RUNNING
         self.cur_index -= 1
         
         frame = self.frames[self.cur_index]
@@ -221,6 +223,24 @@ class ImageGUI:
                 if(current_text == 'Annotated image'): # start annotation part
                     self.show_message('Please wait. Starting next part....')
                     self.callback.on_detect_start()
+                    self.cur_state = Status.RUNNING_SECOND
+            return
+
+        if self.cur_state == Status.RUNNING_SECOND:
+            if not self.show_next_frame():#Failed to show next frame - means finished
+                self.pressed += 1
+                if(self.pressed == 1):
+                    self.show_message('Press again to restart')
+                else:
+                    self.add_frame(left_text='Left side', right_text='Right side', bottom_text='Message will be shown here')
+                    self.show_next_frame()
+                    
+                    # Reset
+                    self.frames.clear()
+                    self.cur_index = -1
+                    self.cur_state = Status.NOT_STARTED
+            else:
+                self.pressed = 0
             return
 
         if self.cur_state == Status.NOT_STARTED:
