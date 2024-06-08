@@ -15,6 +15,7 @@ from helper import read_templates, perform_matching, show_image
 from segmenter import segment_new, get_image_at_segment
 from gui import create_gui, Callbacks, ImageGUI, Status
 from bg_remover import remove_background
+from utility import crop_image
 
 
 def segment(image):
@@ -192,6 +193,10 @@ def start_detection(image):
     image_without_back = remove_background(image)
     gui.add_frame(left_image=image_without_back, left_text='Background removed')
     
+    # Crop image
+    # image_cropped = crop_image(image_without_back)
+    # gui.add_frame(left_image=image_cropped,left_text="Cropped image")
+    
     threes = find_threeshold(image=image_without_back)
     
     threes_image, weak, strong = perform_threshold(image=image_without_back,threes=threes)
@@ -200,6 +205,7 @@ def start_detection(image):
     thress_image = normalize(thress_image)
     gui.add_frame(left_image=thress_image, left_text='Threesholded', bottom_text=f"Threeshold value is: {threes}")
     
+        
     cropped, my_segments = segment_new(thress_image)
     gui.add_frame(left_image=cropped, left_text='Segmented image', bottom_text='Each isolated gray area is one segment')
     
