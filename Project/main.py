@@ -14,6 +14,7 @@ from equalization import equalize
 from helper import read_templates, perform_matching, show_image
 from segmenter import segment_new, get_image_at_segment
 from gui import create_gui, Callbacks, ImageGUI, Status
+from bg_remover import remove_background
 
 
 def segment(image):
@@ -183,17 +184,17 @@ def start_detection(image):
     global gui, thress_image, my_segments
     
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Gray scale conversion
-    # show_image(image=image, name="Gray scale converted")
     gui.add_frame(left_image=image, left_text='Gray scale converted')
     
-    # Histogram equalize
-    equalized_image = equalize(image, show = False)
-    # show_image(image=equalized_image, name="Histogram Equalized")
-    gui.add_frame(left_image=equalized_image, left_text='Histogram Equalized')
+    image = remove_background(image)
     
-    threes = find_threeshold(image=equalized_image)
+    # Remove background
+    image_without_back = remove_background(image)
+    gui.add_frame(left_image=image_without_back, left_text='Background removed')
     
-    threes_image, weak, strong = perform_threshold(image=equalized_image,threes=threes)
+    threes = find_threeshold(image=image_without_back)
+    
+    threes_image, weak, strong = perform_threshold(image=image_without_back,threes=threes)
     thress_image = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
     
     thress_image = normalize(thress_image)
@@ -247,7 +248,7 @@ def start():
 
 start()
 
-# Should work with solid background or having some background
+# Should work with solid background or having some background -done
 # Try to align rotated version and then compare
 # Try to use separate joing digit if possible - optional
 # Show everything in GUI not in console - maybe color the current digit and show on right
