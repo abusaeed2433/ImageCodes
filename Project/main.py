@@ -179,11 +179,11 @@ def extract_and_detect_segments(gray_image, my_segments):
         
         percent = "{:.3f}".format(percent)
         
-        merged_image = merge_images(digit_one, digit_two, horiz = False)
-        merged_image = merge_images(segment, merged_image, horiz = False)
-        
         actual_template = get_actual_template(matched_dig)
-        merged_image = merge_images(merged_image, actual_template, horiz = True)
+
+        merged_image = merge_images(image1=segment, image2=digit_one, horiz=True)
+        merged_image = merge_images(image1=merged_image, image2=digit_two, horiz=True)
+        merged_image = merge_images(merged_image, actual_template, horiz = False)
         
         color = index_to_color(index)
         index += 1
@@ -205,7 +205,7 @@ def extract_and_detect_segments(gray_image, my_segments):
         
         gui.add_frame(
             left_image=color_image, left_text='Matching with',
-            right_image=merged_image, right_text='Two best aligned form & template',
+            right_image=merged_image, right_text='Segment | Aligned-1 | Aligned-2 \n Best matched template',
             bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}"
         )
         # show_image(segment)
@@ -279,7 +279,8 @@ def start():
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input_rotated.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png'
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\good_bad.png'
         ],
         callback=Callbacks(start=on_start_req, on_ready= on_gui_ready, on_detect_start = start_extract_and_detect_part)
     )

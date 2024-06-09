@@ -239,7 +239,7 @@ class ImageGUI:
             if not self.show_next_frame(): # Failed to show next frame - means finished
                 self.pressed += 1
                 if(self.pressed == 1):
-                    self.add_frame(right_image = self.final_image, keep_prev=True, bottom_text='Final result')
+                    self.add_frame(right_image = self.final_image, right_text='Final result', keep_prev=True, bottom_text='All matched digit with segment')
                     self.show_next_frame()
                 elif self.pressed == 2:
                     self.show_message('Press again to restart')
