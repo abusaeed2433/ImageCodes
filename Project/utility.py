@@ -1,28 +1,52 @@
 import cv2
 import numpy as np
 
-def merge_images(image1, image2):
+
+def get_actual_template(digit):
+    path = "Project\images\\actual_template\\"+str(digit)+".png"
+    image = cv2.imread(path,0)
+    return image
+
+def merge_images(image1, image2, horiz = False):
+
     height1, width1 = image1.shape
-    
     height2, width2 = image2.shape
 
-    max_width = max(width1, width2)
+    new_height = 0
+    new_width = 0
 
-    # Create a new image of the appropriate size
-    merged_image = 255 * np.ones((height1 + height2+3, max_width), dtype=np.uint8)
+    if horiz:
+        new_height = max(height1, height2)
+        new_width = width1 + width2
+    else:
+        new_width = max(width1, width2)
+        new_height = height1 + height2
+
+    merged_image = 255 * np.ones( (new_height+4, new_width+4), dtype=np.uint8)
 
     # Copy over the first image
-    for i in range(height1):
-        for j in range(width1):
-            merged_image[i][j] = image1[i][j]
+    for x in range(height1):
+        for y in range(width1):
+            merged_image[x][y] = image1[x][y]
 
-    for j in range(width2):
-        merged_image[height1 + 2][j] = 120
+    if horiz:
+        for x in range(new_height):
+            merged_image[x][width1] = 120
+            merged_image[x][width1+1] = 120
+    else:
+        for y in range(new_width):
+            merged_image[height1][y] = 120
+            merged_image[height1+1][y] = 120
 
-    # Copy over the second image
-    for i in range(height2):
-        for j in range(width2):
-            merged_image[height1 + i][j] = image2[i][j]
+    # Copy over the second image\
+    if horiz:
+        for x in range(height2):
+            for y in range(width2):
+                merged_image[x][width1 + 2 +y] = image2[x][y]
+    else:
+        for x in range(height2):
+            for y in range(width2):
+                merged_image[height1 + 2 + x][y] = image2[x][y]
 
     return merged_image
 

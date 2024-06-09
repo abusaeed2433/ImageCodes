@@ -16,24 +16,28 @@ def show_images(images, name = "Image"):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def read_templates(h=-1,w=-1):
+def read_templates(h=-1,w=-1, use_actual=False):
     templates = []
     for x in range(10):
-        path = "Project\images\\actual\\"+str(x)+".png"
+        
+        path = "Project\images\\min_area_template\\"+str(x)+".png"
+        if use_actual:
+            path = "Project\images\\actual_template\\"+str(x)+".png"
+
         image = cv2.imread(path,0)
         if h != -1 and w != -1:
             image = cv2.resize(image,(w,h),image)
         templates.append(image)
     return templates
 
-def perform_matching(segment):
+def perform_matching(segment, use_actual = False):
     segment = segment.copy()
     templates = []
     
     h,w = segment.shape
     if h > TEMPLATE_SIZE[1] and w > TEMPLATE_SIZE[0]:
         segment = cv2.resize(segment,TEMPLATE_SIZE,segment)
-        templates = read_templates()
+        templates = read_templates(use_actual=use_actual)
         h = TEMPLATE_SIZE[1]
         w = TEMPLATE_SIZE[0]
         # print('Template not resized')
@@ -44,7 +48,7 @@ def perform_matching(segment):
         
         # print('Template resized')
         segment = cv2.resize(segment,(w,h),segment)
-        templates = read_templates(h=h, w=w)
+        templates = read_templates(h=h, w=w, use_actual=use_actual)
 
     # print((h,w))
     # print(segment.shape)

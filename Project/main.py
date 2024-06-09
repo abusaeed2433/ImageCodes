@@ -15,7 +15,7 @@ from helper import read_templates, perform_matching, show_image
 from segmenter import segment_new, get_image_at_segment
 from gui import create_gui, Callbacks, ImageGUI, Status
 from bg_remover import remove_background
-from utility import crop_image, merge_images
+from utility import crop_image, merge_images, get_actual_template
 from aligner import get_aligned_digit
 
 def segment(image):
@@ -159,12 +159,10 @@ def extract_and_detect_segments(gray_image, my_segments):
         
         digit_one, digit_two = get_aligned_digit(segment.copy())
         
+        matched_dig_act, matched_seg_act, percent_act = perform_matching(segment=segment, use_actual=True)
         matched_dig_one, matched_seg_one, percent_one = perform_matching(segment=digit_one)
         matched_dig_two, matched_seg_two, percent_two = perform_matching(segment=digit_two)
-        
-        percent_one = "{:.3f}".format(percent_one)
-        percent_two = "{:.3f}".format(percent_two)
-        
+                
         matched_dig = matched_dig_one
         matched_seg = matched_seg_one
         percent = percent_one
@@ -174,7 +172,18 @@ def extract_and_detect_segments(gray_image, my_segments):
             matched_seg = matched_seg_two
             percent = percent_two
         
-        merged_image = merge_images(digit_one, digit_two)
+        if abs(percent - percent_act) < 5: # 10% tolerable
+            matched_dig = matched_dig_act
+            matched_seg = matched_seg_act
+            percent = percent_act
+        
+        percent = "{:.3f}".format(percent)
+        
+        merged_image = merge_images(digit_one, digit_two, horiz = False)
+        merged_image = merge_images(segment, merged_image, horiz = False)
+        
+        actual_template = get_actual_template(matched_dig)
+        merged_image = merge_images(merged_image, actual_template, horiz = True)
         
         color = index_to_color(index)
         index += 1
@@ -188,15 +197,15 @@ def extract_and_detect_segments(gray_image, my_segments):
         
         # angle = calc_rotation_angle(re)
         
-        gui.add_frame(
-            left_image=color_image, left_text='Matching with', 
-            right_image=merged_image, right_text='Aligned image',
-            bottom_text='Alinged image on right', keep_prev=True 
-        )
+        # gui.add_frame(
+        #     left_image=color_image, left_text='Matching with', 
+        #     right_image=merged_image, right_text='Aligned image',
+        #     bottom_text='Alinged image on right', keep_prev=True 
+        # )
         
         gui.add_frame(
             left_image=color_image, left_text='Matching with',
-            right_image=matched_seg, right_text='Matched with',
+            right_image=merged_image, right_text='Two best aligned form & template',
             bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}"
         )
         # show_image(segment)
@@ -225,6 +234,7 @@ def start_detection(image):
     thress_image = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
     
     thress_image = normalize(thress_image)
+    # cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\rotated_44.png', thress_image)
     gui.add_frame(left_image=thress_image, left_text='Threesholded', bottom_text=f"Threeshold value is: {threes}")
 
     cropped, my_segments = segment_new(thress_image)

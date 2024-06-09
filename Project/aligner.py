@@ -131,7 +131,13 @@ def get_aligned_digit(segment): #segment is copied. Do whatever you want to
             lx = nlx
             ly = nly
 
-    rotated_states = sorted(rotated_states, key=lambda state: (state.width, state.area))
+        # print(f'Angle: {angle}, Area: {area}, width: {nw}, height: {nh}')
+        # image_int = plot_points_on_image( nh, nw, points, nlx, nly)
+        # cv2.imshow(f'Image at angle {angle}        ', image_int)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+    rotated_states = sorted(rotated_states, key=lambda state: (state.width, state.height))
     
     image_one = None
     image_two = None
@@ -152,11 +158,14 @@ def get_aligned_digit(segment): #segment is copied. Do whatever you want to
     # cv2.destroyAllWindows()
     return image_one, image_two
 
-# image = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\rotated_1.png',0)
-# cv2.imshow('Input image', image)
+# image = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\rotated_7.png',0)
+# image_one, image_two = get_aligned_digit(image)
+# cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\z_rotated_7_one.png', image_one)
+# cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\z_rotated_7_two.png', image_two)
+
+# image = cv2.imread('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\7_resi.png',0)
+# image = cv2.resize(image, (60,80))
+# cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\7_resized.png',image)
+# cv2.imshow('Resized', image)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
-
-# image_one, image_two = get_aligned_digit(image)
-# cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\rotated_1_one.png', image_one)
-# cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\rotated_1_two.png', image_two)
