@@ -172,7 +172,7 @@ def extract_and_detect_segments(gray_image, my_segments):
             matched_seg = matched_seg_two
             percent = percent_two
         
-        if abs(percent - percent_act) < 5: # 10% tolerable
+        if int(matched_dig) == 6 or int(matched_dig) == 9 and  abs(percent - percent_act) < 5: # 5% tolerable for 6,9
             matched_dig = matched_dig_act
             matched_seg = matched_seg_act
             percent = percent_act
@@ -287,7 +287,7 @@ def start():
 start()
 
 # Should work with solid background or having some background -done
-# Try to align rotated version and then compare
+# Try to align rotated version and then compare - done
 # Try to use separate joing digit if possible - optional
 # Show everything in GUI not in console - maybe color the current digit and show on right -done
 
