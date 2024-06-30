@@ -39,7 +39,7 @@ def calculate_descriptors(binary_image,i):
     cv2.imshow('Border'+str(i), border_image)   
     cv2.imshow('Input image'+str(i), img)
     
-    compact = (perimeter / (area**2))
+    compact = (perimeter**2) / area
     form_fact = (4*pi*area) / (perimeter**2)
     roundness = (4*area) / (pi * max_d**2)
     
