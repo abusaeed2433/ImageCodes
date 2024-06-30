@@ -1,7 +1,6 @@
 import numpy as np
 import math
 import numpy as np
-import scipy.ndimage as ndimage
 
 def generateGaussianKernel(sigmaX, sigmaY, MUL = 5):
     w = int(sigmaX * MUL) | 1

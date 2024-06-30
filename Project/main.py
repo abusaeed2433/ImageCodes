@@ -302,3 +302,6 @@ start()
 # Final project report
 # Last lab report + project report together
 # Project demonstration(video or pic by pic) in slide
+
+# Command for running:
+# & D:\installation\Python\python.exe D:\Documents\COURSES\4.1\Labs\Image\ImageCodes\Project\main.py
