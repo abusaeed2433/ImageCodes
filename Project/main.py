@@ -159,18 +159,23 @@ def extract_and_detect_segments(gray_image, my_segments):
         
         digit_one, digit_two = get_aligned_digit(segment.copy())
         
-        matched_dig_act, matched_seg_act, percent_act = perform_matching(segment=segment, use_actual=True)
-        matched_dig_one, matched_seg_one, percent_one = perform_matching(segment=digit_one)
-        matched_dig_two, matched_seg_two, percent_two = perform_matching(segment=digit_two)
-                
+        matched_dig_act, matched_seg_act, percent_act, pcnts = perform_matching(segment=segment, use_actual=True)
+        matched_dig_one, matched_seg_one, percent_one, _ = perform_matching(segment=digit_one)
+        matched_dig_two, matched_seg_two, percent_two, _ = perform_matching(segment=digit_two)
+
         matched_dig = matched_dig_one
         matched_seg = matched_seg_one
         percent = percent_one
         
-        if percent_one < percent_two:
+        if percent < percent_two:
             matched_dig = matched_dig_two
             matched_seg = matched_seg_two
             percent = percent_two
+        
+        if percent < percent_act:
+            matched_dig = matched_dig_act
+            matched_seg = matched_seg_act
+            percent = percent_act
         
         if int(matched_dig) == 6 or int(matched_dig) == 9 and  abs(percent - percent_act) < 5: # 5% tolerable for 6,9
             matched_dig = matched_dig_act
@@ -206,7 +211,7 @@ def extract_and_detect_segments(gray_image, my_segments):
         gui.add_frame(
             left_image=color_image, left_text='Matching with',
             right_image=merged_image, right_text='Segment | Aligned-1 | Aligned-2 \n Best matched template',
-            bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}"
+            bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}. Others are: 1:{pcnts[1]}, 2:{pcnts[2]}, 3:{pcnts[3]}, 4:{pcnts[4]}, 5:{pcnts[5]}, 6:{pcnts[6]}, 7:{pcnts[7]}, 8:{pcnts[8]}, 9:{pcnts[9]}, 0:{pcnts[0]}"
         )
         # show_image(segment)
 
@@ -218,7 +223,7 @@ def start_detection(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Gray scale conversion
     gui.add_frame(left_image=image, left_text='Gray scale converted')
     
-    image = remove_background(image)
+    # image = remove_background(image)
     
     # Remove background
     image_without_back = remove_background(image)
@@ -278,6 +283,7 @@ def start():
         image_paths=[
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input_rotated.png', # ok
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\rotated_back_green.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png', # ok
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\good_bad.png',

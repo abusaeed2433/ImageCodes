@@ -152,6 +152,11 @@ def get_aligned_digit(segment): #segment is copied. Do whatever you want to
         image_two = plot_points_on_image( state.height, state.width, state.points, state.left_x, state.top_y)
         image_two = fill_whole(image_two)
     
+    # three, four, five = None, None, None
+    # if len(rotated_states) >= 5:
+    #     three = rotated_states[2]
+    #     four = rotated_states[3]
+    #     five = rotated_states[4]
     # cv2.imshow('One', image_one)
     # cv2.imshow('Two', image_two)
     # cv2.waitKey(0)
