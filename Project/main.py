@@ -277,8 +277,8 @@ def start():
         text_bottom='Message will shown here',
         image_paths=[
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input_rotated.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input_rotated.png', # ok
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png', # ok
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\good_bad.png',
             'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\mis_aligned.png',

@@ -64,8 +64,8 @@ def merge(image_horiz, image_vert):
     return out
 
 def find_next_threeshold(image, t):
-    total1 = 0
-    total2 = 0
+    total1 = np.int64(0)
+    total2 = np.int64(0)
     c1 = 0
     c2 = 0
     
@@ -79,14 +79,14 @@ def find_next_threeshold(image, t):
             else:
                 total1 += px
                 c1 += 1
+    print(f'Total-1: {total1} and Total-2: {total2}')
     mu1 = total1 / c1
     mu2 = total2 / c2
     
     return (mu1 + mu2) / 2
-            
 
 def find_threeshold(image):
-    total = 0
+    total = 0.0
     h,w = image.shape
     for x in range(h):
         for y in range(w):
@@ -113,7 +113,7 @@ def make_binary(t, image, low = 0, high = 255):
 
 
 def start():
-    image_path = '.\images\\lena.jpg'
+    image_path = 'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\ClassWork_2\\images\\lena.jpg'
     
     # image_path = '.\images\\lines.jpg'
     
@@ -168,7 +168,6 @@ def doc_code():
     
     cv2.imshow("Blurred gray", gray)
     
-    
     grad_x = cv2.Sobel(gray, ddepth, 1, 0, ksize=3, scale=scale, delta=delta, borderType=cv2.BORDER_DEFAULT)
     grad_x_nor = normalize(grad_x)
     cv2.imshow("X derivative", grad_x_nor)
@@ -176,14 +175,11 @@ def doc_code():
     grad_y = cv2.Sobel(gray, ddepth, 0, 1, ksize=3, scale=scale, delta=delta, borderType=cv2.BORDER_DEFAULT)
     grad_y_nor = normalize(grad_y)
     cv2.imshow("Y derivative", grad_y_nor)
-    
-    
+
     abs_grad_x = cv2.convertScaleAbs(grad_x)
     abs_grad_y = cv2.convertScaleAbs(grad_y)
     
-    
     grad = cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
-    
     
     cv2.imshow("Output", grad)
     cv2.waitKey(0)
