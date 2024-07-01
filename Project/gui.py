@@ -310,7 +310,8 @@ class ImageGUI:
         self.cur_state = Status.INPUT_IMAGE_SELECTED
         
         image = cv2.imread(self.selected_image_path)
-        self.add_frame(left_image=image,left_text='Input image')
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        self.add_frame(left_image=image_rgb,left_text='Input image')
         self.show_next_frame()
         
         self.show_button_text("Start detecting")

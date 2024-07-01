@@ -211,14 +211,14 @@ def extract_and_detect_segments(gray_image, my_segments):
         gui.add_frame(
             left_image=color_image, left_text='Matching with',
             right_image=merged_image, right_text='Segment | Aligned-1 | Aligned-2 \n Best matched template',
-            bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}. Others are: 1:{pcnts[1]}, 2:{pcnts[2]}, 3:{pcnts[3]}, 4:{pcnts[4]}, 5:{pcnts[5]}, 6:{pcnts[6]}, 7:{pcnts[7]}, 8:{pcnts[8]}, 9:{pcnts[9]}, 0:{pcnts[0]}"
+            bottom_text=f"matched_with {str(matched_dig)} with percentage: {percent}."# Others are: 1:{pcnts[1]}, 2:{pcnts[2]}, 3:{pcnts[3]}, 4:{pcnts[4]}, 5:{pcnts[5]}, 6:{pcnts[6]}, 7:{pcnts[7]}, 8:{pcnts[8]}, 9:{pcnts[9]}, 0:{pcnts[0]}"
         )
         # show_image(segment)
 
-thress_image = None
+norm_image = None
 my_segments = None
 def start_detection(image):
-    global gui, thress_image, my_segments
+    global gui, norm_image, my_segments
     
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Gray scale conversion
     gui.add_frame(left_image=image, left_text='Gray scale converted')
@@ -231,26 +231,24 @@ def start_detection(image):
     
     # Crop image
     # image_cropped = crop_image(image_without_back)
-    # gui.add_frame(left_image=image_cropped,left_text="Cropped image")
+    # gui.add_frame(left_image=image_cropped,left_text="Cropped image")    
+    # threes = find_threeshold(image=image_without_back)
+    # threes_image, weak, strong = perform_threshold(image=image_without_back,threes=threes)
+    # thress_image = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
     
-    threes = find_threeshold(image=image_without_back)
-    
-    threes_image, weak, strong = perform_threshold(image=image_without_back,threes=threes)
-    thress_image = perform_hysteresis( image=threes_image, weak=weak, strong=strong )
-    
-    thress_image = normalize(thress_image)
+    norm_image = normalize(image_without_back)
     # cv2.imwrite('D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\rotate_test\\rotated_44.png', thress_image)
-    gui.add_frame(left_image=thress_image, left_text='Threesholded', bottom_text=f"Threeshold value is: {threes}")
+    # gui.add_frame(left_image=thress_image, left_text='Threesholded', bottom_text=f"Threeshold value is: {threes}")
 
-    cropped, my_segments = segment_new(thress_image)
+    cropped, my_segments = segment_new(image_without_back)
     gui.add_frame(left_image=cropped, left_text='Segmented image', bottom_text='Each isolated gray area is one segment')
     
     annotated = annotate_rect_points(cropped,my_segments)
     gui.add_frame(left_image=annotated, left_text='Annotated image') # Don't change this text idiot, used in gui part
 
 def start_extract_and_detect_part():
-    global thress_image, my_segments
-    extract_and_detect_segments(thress_image, my_segments)
+    global norm_image, my_segments
+    extract_and_detect_segments(norm_image, my_segments)
     
     global gui
     gui.show_message('Extracted. Continue to see')
@@ -262,7 +260,10 @@ def on_start_req(path):
     gui.cur_state = Status.RUNNING
 
     image = cv2.imread(path)
+    
     start_detection(image=image)
+    
+    
 
 
 def on_gui_ready(l_gui):
@@ -281,18 +282,24 @@ def start():
         text_right='Output side',
         text_bottom='Message will shown here',
         image_paths=[
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\input_rotated.png', # ok
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\rotated_back_green.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png', # ok
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\solid_back.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\good_bad.png',
-            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\mis_aligned.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\no_back.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\all_no_back.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\odd_even.png',
+            'D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\Project\\images\\input\\all_solid_back.png'
         ],
         callback=Callbacks(start=on_start_req, on_ready= on_gui_ready, on_detect_start = start_extract_and_detect_part)
     )
 
 start()
+
+
+
+
+
+
+
+
+
 
 # Should work with solid background or having some background -done
 # Try to align rotated version and then compare - done
