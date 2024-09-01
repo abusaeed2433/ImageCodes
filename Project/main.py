@@ -18,69 +18,6 @@ from bg_remover import remove_background
 from utility import crop_image, merge_images, get_actual_template
 from aligner import get_aligned_digit
 
-def segment(image):
-    thress = image.copy()
-    image = image.copy()
-    
-    # show_image(image=image, name="atek")
-
-    vert = []
-    not_in_prev = True
-
-    h,w = image.shape
-        
-    for x in range(h):
-        if 0 not in image[x]: # contains no digit
-            for y in range(w):
-                image[x][y] = 100
-            
-            if not not_in_prev:
-                vert.append(x)
-            not_in_prev = True
-        else:
-            if not_in_prev:
-                vert.append(x)
-            not_in_prev = False
-     
-    not_in_prev = True
-    horiz = []
-    for y in range(w):
-        if not np.any(image[:, y] == 0): # contains no digit
-            for x in range(h):
-                image[x][y] = 50
-            if not not_in_prev:
-                horiz.append(y)
-            not_in_prev = True
-        else:
-            if not_in_prev:
-                horiz.append(y)
-            not_in_prev = False
-    
-    # print(horiz)
-    # print(vert)
-    
-    rects = []
-    n1 = len(horiz)
-    n2 = len(vert)
-    for i in range(0, n1, 2 ):
-        for j in range(0, n2, 2 ):
-            h1 = horiz[i]
-            h2 = horiz[i+1]
-            v1 = vert[j]
-            v2 = vert[j+1]
-            
-            p1 = (h1, v1)
-            p2 = (h2, v1)
-            p3 = (h2, v2)
-            p4 = (h1, v2)
-            
-            rect = (p1,p2,p3,p4)
-            if is_rect_valid(thress,rect):
-                rects.append(rect)
-       
-    return image, rects
-
-
 def draw_point_at(image, x,y, color = 100):
     indices = ( (-1,-1), (0, -1), (1,-1), (-1,0), (0,0), (1,0), (-1,1), (0,1), (1,1) )
     
