@@ -153,7 +153,7 @@ def choose_option(list, message = "Select an option", error_message="Invalid ind
 
 def start():
     main_options = ['start', 'exit']
-    image_names = ['cat.jpg', 'girl_with_board.png', 'lena.jpg', 'lines.jpg', 'shape.jpg']
+    image_names = ['ice_cream.jpg','cat.jpg', 'girl_with_board.png', 'lena.jpg', 'lines.jpg', 'shape.jpg']
     
     while( True ):
         index = choose_option(main_options, "Enter 0 to continue: ", error_message="Stopped")
@@ -165,6 +165,7 @@ def start():
             continue
         image_name = image_names[index]
         image_path = '.\images\\'+image_name
+        print(image_path)
         
         print("Enter the value of sigma: ", end=' ')
         sigma = float( input() )

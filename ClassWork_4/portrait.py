@@ -137,11 +137,26 @@ def get_edge_points(image):
     W_F = H_F = 2
 
     points = []
-    for i in range( len(contours) ):
+    break_indicies = []
+    count = 0
+    i = 4
+    max = 100
+    taken = 0
+    rev = {1}
+    while(i < len(contours)):
+        if(i in rev):
+            contours[i].reverse()
         cnt = contours[i]
         for pt in cnt:
             points.append( (pt[0]/W_F, pt[1]/H_F) )
-    return points
+            count += 1
+        break_indicies.append(count)
+        taken += 1
+        if(taken >= max):
+            break
+        i+=1
+    #points.reverse()
+    return points, break_indicies
 
 def show_image(name, image, wait=True):
     cv2.imshow(name, image)
@@ -150,21 +165,64 @@ def show_image(name, image, wait=True):
         cv2.destroyAllWindows()
 
 def start(image_path):
-    image = cv2.imread(image_path,0)
+    # image = cv2.imread(image_path,0)
 
-    edge = perform_canny(image=image, show=False)
+    # edge = perform_canny(image=image, show=False)
+    edge = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
     # output_file = "businessman_edge.png"
     # cv2.imwrite("ClassWork_4\\images\\"+output_file,edge)
     
     # edge = cv2.imread("ClassWork_4\images\\"+output_file, cv2.IMREAD_GRAYSCALE)
     
-    show_image("Input image", image=image)
+    # show_image("Input image", image=image)
     show_image("Canny result", image=edge)
 
-    edge_points = get_edge_points(edge)
+    edge_points,break_indices = get_edge_points(edge)
+    
+    # Normalize points to be within -0.8 to 0.8 while keeping the aspect ratio
+    min_x = min(pt[0] for pt in edge_points)
+    max_x = max(pt[0] for pt in edge_points)
+    min_y = min(pt[1] for pt in edge_points)
+    max_y = max(pt[1] for pt in edge_points)
+
+    range_x = max_x - min_x
+    range_y = max_y - min_y
+
+    scale = 1.6 / max(range_x, range_y)
+
+    normalized_points = []
+    for pt in edge_points:
+        norm_x = -0.8 + scale * (pt[0] - min_x)
+        norm_y = -0.8 + scale * (pt[1] - min_y)
+        normalized_points.append((norm_x, norm_y))
+    
+    # # Normalize points to be within -0.8 to 0.8
+    # min_x = min(pt[0] for pt in edge_points)
+    # max_x = max(pt[0] for pt in edge_points)
+    # min_y = min(pt[1] for pt in edge_points)
+    # max_y = max(pt[1] for pt in edge_points)
+
+    # normalized_points = []
+    # for pt in edge_points:
+    #     norm_x = -0.8 + 1.6 * (pt[0] - min_x) / (max_x - min_x)
+    #     norm_y = -0.8 + 1.6 * (pt[1] - min_y) / (max_y - min_y)
+    #     normalized_points.append((norm_x, norm_y))
+    
+    # Rotate points by 90 degrees clockwise
+    rotated_points = [(pt[1], -pt[0]) for pt in normalized_points]
+    normalized_points = rotated_points
+    # Save points to a text file
+    with open("edge_points.txt", "w") as file:
+        count = 0
+        for pt in normalized_points:
+            if(break_indices.count(count) > 0):
+                file.write("=\n")
+            file.write(f"{pt[0]},{pt[1]}\n")
+            count += 1
     if edge_points:
         start_animation(edge_points)
 
-image_path = "ClassWork_4\\images\\shape.jpg"
+# image_path = "D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\ClassWork_2\\images\\ice_cream.jpg"
+image_path = "D:\\Documents\\COURSES\\4.1\\Labs\\Image\\ImageCodes\\ClassWork_4\\images\\cream_sobel.png"
 start(image_path)

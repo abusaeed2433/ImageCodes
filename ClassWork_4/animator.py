@@ -2,7 +2,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from math import pi
-from scipy.integrate import quad_vec
+# from scipy.integrate import quad_vec
 import matplotlib.animation as animation
 
 value_n = 400 # no of cycles = (2*value_n + 1)
